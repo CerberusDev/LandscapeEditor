@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{2ebc4163-9bce-4aee-97c4-f848346c567f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{bfbceba2-0c73-44a5-be76-343d587ba5a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{1b376c38-9cd4-44f4-8b43-318d930ba658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{b66f40a0-dba4-4dfd-adc6-69d68e19f53f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\LandscapeEditorFrame.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\LandscapeEditor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\LandGLContext.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\LandGLCanvas.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Landscape.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TextureManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Brush.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Shader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\LandscapeShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\LightningOnlyShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\HeightShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\WireframeShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ClipmapWireframeShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ClipmapLandscapeShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\LandscapeEditorFrame.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LandscapeEditor.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LandGLContext.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LandGLCanvas.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Landscape.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\TextureManager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Brush.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Shader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LandscapeShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LightningOnlyShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\HeightShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\WireframeShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\ClipmapWireframeShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\ClipmapLandscapeShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Landscape.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Landscape.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\LightningOnly.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\LightningOnly.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Height.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Height.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Wireframe.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Wireframe.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\ClipmapWireframe.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\ClipmapWireframe.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\ClipmapLandscape.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\ClipmapLandscape.vs">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Content\GUI\GUI.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

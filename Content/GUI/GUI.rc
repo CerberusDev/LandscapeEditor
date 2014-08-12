@@ -1,0 +1,16 @@
+#include "wx/msw/wx.rc"
+#include "Src/Resource.h" 
+
+#define wxUSE_NO_MANIFEST 0
+
+appicon ICON "Content/GUI/appicon.ico"
+
+new BITMAP "Content/GUI/new.bmp"
+open BITMAP "Content/GUI/open.bmp"
+save BITMAP "Content/GUI/save.bmp"
+help BITMAP "Content/GUI/help.bmp"
+brush1 BITMAP "Content/GUI/brush1.bmp"
+brush2 BITMAP "Content/GUI/brush2.bmp"
+brush3 BITMAP "Content/GUI/brush3.bmp"
+brush4 BITMAP "Content/GUI/brush4.bmp"
+

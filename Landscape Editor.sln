@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Landscape Editor", "Landscape Editor.vcxproj", "{7793F1DF-850E-4332-85B3-1BDA5167C3B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		DLL Debug|Win32 = DLL Debug|Win32
+		DLL Release|Win32 = DLL Release|Win32
+		DLL Universal Debug|Win32 = DLL Universal Debug|Win32
+		DLL Universal Release|Win32 = DLL Universal Release|Win32
+		Release|Win32 = Release|Win32
+		Universal Debug|Win32 = Universal Debug|Win32
+		Universal Release|Win32 = Universal Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Debug|Win32.Build.0 = Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Debug|Win32.ActiveCfg = DLL Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Debug|Win32.Build.0 = DLL Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Release|Win32.ActiveCfg = DLL Release|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Release|Win32.Build.0 = DLL Release|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Universal Debug|Win32.ActiveCfg = DLL Universal Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Universal Debug|Win32.Build.0 = DLL Universal Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Universal Release|Win32.ActiveCfg = DLL Universal Release|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.DLL Universal Release|Win32.Build.0 = DLL Universal Release|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Release|Win32.ActiveCfg = Release|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Release|Win32.Build.0 = Release|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Universal Debug|Win32.ActiveCfg = Universal Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Universal Debug|Win32.Build.0 = Universal Debug|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Universal Release|Win32.ActiveCfg = Universal Release|Win32
+		{7793F1DF-850E-4332-85B3-1BDA5167C3B5}.Universal Release|Win32.Build.0 = Universal Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
