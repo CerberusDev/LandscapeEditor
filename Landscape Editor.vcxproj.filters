@@ -106,46 +106,46 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Src\Landscape.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\Landscape.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\LightningOnly.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\LightningOnly.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\Height.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\Height.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\Wireframe.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\Wireframe.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\ClipmapWireframe.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\ClipmapWireframe.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\ClipmapLandscape.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Src\ClipmapLandscape.vs">
-      <Filter>Shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="Content\GUI\GUI.rc">
       <Filter>Resource</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Shaders\ClipmapLandscape.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\ClipmapLandscape.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\ClipmapWireframe.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\ClipmapWireframe.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Height.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Height.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Landscape.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Landscape.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\LightningOnly.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\LightningOnly.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Wireframe.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Wireframe.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

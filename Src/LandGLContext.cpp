@@ -183,17 +183,17 @@ MovementModifier(10.0f), bNewLandscape(false)
     ResetCamera();
     ResetAllVBOIBO();
 
-    if (LandscapeShad.Initialize("Src/Landscape.vs", "Src/Landscape.fs") == false)
+    if (LandscapeShad.Initialize("Src/Shaders/Landscape.vs", "Src/Shaders/Landscape.fs") == false)
         FatalError("Landscape Shader init failed");
-    if (LightningOnlyShad.Initialize("Src/LightningOnly.vs", "Src/LightningOnly.fs") == false)
+    if (LightningOnlyShad.Initialize("Src/Shaders/LightningOnly.vs", "Src/Shaders/LightningOnly.fs") == false)
         FatalError("Lightning Only Shader init failed");
-    if (HeightShad.Initialize("Src/Height.vs", "Src/Height.fs") == false)
+    if (HeightShad.Initialize("Src/Shaders/Height.vs", "Src/Shaders/Height.fs") == false)
         FatalError("Height Shader init failed");
-    if (WireframeShad.Initialize("Src/Wireframe.vs", "Src/Wireframe.fs") == false)
+    if (WireframeShad.Initialize("Src/Shaders/Wireframe.vs", "Src/Shaders/Wireframe.fs") == false)
         FatalError("Wireframe Shader init failed");
-	if (ClipmapWireframeShad.Initialize("Src/ClipmapWireframe.vs", "Src/ClipmapWireframe.fs") == false)
+	if (ClipmapWireframeShad.Initialize("Src/Shaders/ClipmapWireframe.vs", "Src/Shaders/ClipmapWireframe.fs") == false)
         FatalError("Clipmap Wireframe Shader init failed");
-	if (ClipmapLandscapeShad.Initialize("Src/ClipmapLandscape.vs", "Src/ClipmapLandscape.fs") == false)
+	if (ClipmapLandscapeShad.Initialize("Src/Shaders/ClipmapLandscape.vs", "Src/Shaders/ClipmapLandscape.fs") == false)
         FatalError("Clipmap Landscape Shader init failed");
     
 	SetShadersInitialUniforms();
