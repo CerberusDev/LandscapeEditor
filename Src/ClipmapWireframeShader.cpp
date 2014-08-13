@@ -14,103 +14,85 @@ ClipmapWireframeShader::ClipmapWireframeShader()
 // --------------------------------------------------------------------
 bool ClipmapWireframeShader::InitializeUniforms()
 {
-    uBrushTexture = glGetUniformLocation(ShaderProgram, "BrushTextureSampler");
-    if (uBrushTexture == 0xFFFFFFFF)
-    {
-        LOG("Cannot find BrushTextureSampler uniform variable");
-        return false;
-    }
+	Uniforms.insert(std::make_pair<std::string, GLuint>("BrushTextureSampler", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("TBOSampler", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("gWorld", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("BrushPosition", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("BrushScale", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapSizeX", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapSizeY", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("LandscapeVertexOffset", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("WireframeColor", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("BrushColor", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("TestOffsetX", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("TestOffsetY", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapScale", 0));
+	Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapPartOffset", 0));
 
-    uTBO = glGetUniformLocation(ShaderProgram, "TBOSampler");
-    if (uTBO == 0xFFFFFFFF)
-    {
-        LOG("Cannot find TBOSampler uniform variable");
-        return false;
-    }
-
-       uMVP = glGetUniformLocation(ShaderProgram, "gWorld");
-    if (uMVP == 0xFFFFFFFF)
-    {
-        LOG("Cannot find gWorld uniform variable");
-        return false;
-    }
-
-    uBrushPosition = glGetUniformLocation(ShaderProgram, "BrushPosition");
-    if (uBrushPosition == 0xFFFFFFFF)
-    {
-        LOG("Cannot find BrushPosition uniform variable");
-        return false;
-    }
-
-    uBrushScale = glGetUniformLocation(ShaderProgram, "BrushScale");
-    if (uBrushScale == 0xFFFFFFFF)
-    {
-        LOG("Cannot find BrushScale uniform variable");
-        return false;
-    }
-
-    uClipmapSizeX = glGetUniformLocation(ShaderProgram, "ClipmapSizeX");
-    if (uClipmapSizeX == 0xFFFFFFFF)
-    {
-        LOG("Cannot find ClipmapSizeX uniform variable");
-        return false;
-    }
-
-    uClipmapSizeY = glGetUniformLocation(ShaderProgram, "ClipmapSizeY");
-    if (uClipmapSizeY == 0xFFFFFFFF)
-    {
-        LOG("Cannot find ClipmapSizeY uniform variable");
-        return false;
-    }
-
-    uLandscapeVertexOffset = glGetUniformLocation(ShaderProgram, "LandscapeVertexOffset");
-    if (uLandscapeVertexOffset == 0xFFFFFFFF)
-    {
-        LOG("Cannot find LandscapeVertexOffset uniform variable");
-        return false;
-    }
-
-    uWireframeColor = glGetUniformLocation(ShaderProgram, "WireframeColor");
-    if (uWireframeColor == 0xFFFFFFFF)
-    {
-        LOG("Cannot find WireframeColor uniform variable");
-        return false;
-    }
-
-    uBrushColor = glGetUniformLocation(ShaderProgram, "BrushColor");
-    if (uBrushColor == 0xFFFFFFFF)
-    {
-        LOG("Cannot find BrushColor uniform variable");
-        return false;
-    }
-
-	uTestOffsetX = glGetUniformLocation(ShaderProgram, "TestOffsetX");
-    if (uTestOffsetX == 0xFFFFFFFF)
-    {
-        LOG("Cannot find TestOffsetX uniform variable");
-        return false;
-    }
-
-	uTestOffsetY = glGetUniformLocation(ShaderProgram, "TestOffsetY");
-    if (uTestOffsetY == 0xFFFFFFFF)
-    {
-        LOG("Cannot find TestOffsetY uniform variable");
-        return false;
-    }
-
-	uClipmapScale = glGetUniformLocation(ShaderProgram, "ClipmapScale");
-    if (uClipmapScale == 0xFFFFFFFF)
-    {
-        LOG("Cannot find ClipmapScale uniform variable");
-        return false;
-    }
-
-	uClipmapPartOffset = glGetUniformLocation(ShaderProgram, "ClipmapPartOffset");
-    if (uClipmapPartOffset == 0xFFFFFFFF)
-    {
-        LOG("Cannot find ClipmapPartOffset uniform variable");
-        return false;
-    }
+	for (auto it = Uniforms.begin(); it != Uniforms.end(); ++it)
+	{
+		it->second = glGetUniformLocation(ShaderProgram, it->first.c_str());
+		if (it->second == 0xFFFFFFFF)
+		{
+			ERR("Cannot find " << it->first << " uniform variable");
+			return false;
+		}
+	}
 
     return true;
+}
+
+// --------------------------------------------------------------------
+void ClipmapWireframeShader::SetUniform1i(std::string UniformName, int Value)
+{
+	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
+
+	if (it != Uniforms.end())
+		glUniform1i(it->second, Value);
+	else
+		WARN("Trying to set " << UniformName << " uniform, but it don't exist");
+}
+
+// --------------------------------------------------------------------
+void ClipmapWireframeShader::SetUniformM4fv(std::string UniformName, mat4 Value)
+{
+	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
+
+	if (it != Uniforms.end())
+		glUniformMatrix4fv(it->second, 1, GL_FALSE, &Value[0][0]);
+	else
+		WARN("Trying to set " << UniformName << " uniform, but it don't exist");
+}
+
+// --------------------------------------------------------------------
+void ClipmapWireframeShader::SetUniform2fv(std::string UniformName, vec2 Value)
+{
+	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
+
+	if (it != Uniforms.end())
+		glUniform2fv(it->second, 1, &Value[0]);
+	else
+		WARN("Trying to set " << UniformName << " uniform, but it don't exist");
+}
+
+// --------------------------------------------------------------------
+void ClipmapWireframeShader::SetUniform1f(std::string UniformName, float Value)
+{
+	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
+
+	if (it != Uniforms.end())
+		glUniform1f(it->second, Value);
+	else
+		WARN("Trying to set " << UniformName << " uniform, but it don't exist");
+}
+
+// --------------------------------------------------------------------
+void ClipmapWireframeShader::SetUniform3fv(std::string UniformName, vec3 Value)
+{
+	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
+
+	if (it != Uniforms.end())
+		glUniform3fv(it->second, 1, &Value[0]);
+	else
+		WARN("Trying to set " << UniformName << " uniform, but it don't exist");
 }

@@ -24,20 +24,11 @@ public:
     ClipmapWireframeShader();
 
     /// Uniform setters
-    void SetBrushTexture(int TextureUnit) {glUniform1i(uBrushTexture, TextureUnit);};
-    void SetTBO(int TBO) {glUniform1i(uTBO, TBO);};
-    void SetMVP(mat4 MVP) {glUniformMatrix4fv(uMVP, 1, GL_FALSE, &MVP[0][0]);};
-    void SetBrushPosition(vec2 BrushPosition) {glUniform2fv(uBrushPosition, 1, &BrushPosition[0]);};
-    void SetBrushScale(float BrushScale) {glUniform1f(uBrushScale, BrushScale);};
-    void SetClipmapSizeX(float ClipmapSizeX) {glUniform1f(uClipmapSizeX, ClipmapSizeX);};
-	void SetClipmapSizeY(float ClipmapSizeY) {glUniform1f(uClipmapSizeY, ClipmapSizeY);};
-    void SetLandscapeVertexOffset(float LandscapeVertexOffset) {glUniform1f(uLandscapeVertexOffset, LandscapeVertexOffset);};
-    void SetWireframeColor(vec3 WireframeColor) {glUniform3fv(uWireframeColor, 1, &WireframeColor[0]);};
-    void SetBrushColor(vec3 BrushColor) {glUniform3fv(uBrushColor, 1, &BrushColor[0]);};
-	void SetTestOffsetX(float TestOffsetX) {glUniform1f(uTestOffsetX, TestOffsetX);};
-	void SetTestOffsetY(float TestOffsetY) {glUniform1f(uTestOffsetY, TestOffsetY);};
-	void SetClipmapScale(float ClipmapScale) {glUniform1f(uClipmapScale, ClipmapScale);};
-	void SetClipmapPartOffset(vec2 ClipmapPartOffset) {glUniform2fv(uClipmapPartOffset, 1, &ClipmapPartOffset[0]);};
+	void SetUniform1i(std::string UniformName, int Value);
+	void SetUniformM4fv(std::string UniformName, mat4 Value);
+	void SetUniform2fv(std::string UniformName, vec2 Value);
+	void SetUniform1f(std::string UniformName, float Value);
+	void SetUniform3fv(std::string UniformName, vec3 Value);
 
 protected:
     /// Initialize uniform variables, return false when failure, true on success

@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------
 #pragma once
 
+#include <unordered_map>
+
 #include <GL/glew.h>
 
 /** Base class for all shaders wrappers */
@@ -12,6 +14,8 @@ class Shader
 protected:
     /// Shader ID
     GLuint ShaderProgram;
+
+	std::unordered_map<std::string, GLuint> Uniforms;
 
 public:
     /// Standard constructors and destructors
