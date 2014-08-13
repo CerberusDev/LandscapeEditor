@@ -68,21 +68,21 @@
     <ClInclude Include="Src\WireframeShader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Src\ClipmapLandscape.fs" />
-    <None Include="Src\ClipmapLandscape.vs" />
-    <None Include="Src\ClipmapWireframe.fs" />
-    <None Include="Src\ClipmapWireframe.vs" />
-    <None Include="Src\Height.fs" />
-    <None Include="Src\Height.vs" />
-    <None Include="Src\Landscape.fs" />
-    <None Include="Src\Landscape.vs" />
-    <None Include="Src\LightningOnly.fs" />
-    <None Include="Src\LightningOnly.vs" />
-    <None Include="Src\Wireframe.fs" />
-    <None Include="Src\Wireframe.vs" />
+    <ResourceCompile Include="Content\GUI\GUI.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Content\GUI\GUI.rc" />
+    <None Include="Src\Shaders\ClipmapLandscape.fs" />
+    <None Include="Src\Shaders\ClipmapLandscape.vs" />
+    <None Include="Src\Shaders\ClipmapWireframe.fs" />
+    <None Include="Src\Shaders\ClipmapWireframe.vs" />
+    <None Include="Src\Shaders\Height.fs" />
+    <None Include="Src\Shaders\Height.vs" />
+    <None Include="Src\Shaders\Landscape.fs" />
+    <None Include="Src\Shaders\Landscape.vs" />
+    <None Include="Src\Shaders\LightningOnly.fs" />
+    <None Include="Src\Shaders\LightningOnly.vs" />
+    <None Include="Src\Shaders\Wireframe.fs" />
+    <None Include="Src\Shaders\Wireframe.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>Landscape Editor</ProjectName>
