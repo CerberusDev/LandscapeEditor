@@ -16,6 +16,7 @@ using namespace glm;
 class ClipmapWireframeShader : public Shader
 {
 public:
+    /// Uniform setters
 	void SetBrushTextureSampler(int Value) {SetUniform("BrushTextureSampler", Value);};
 	void SetTBOSampler(int Value) {SetUniform("TBOSampler", Value);};
 	void SetgWorld(mat4 Value) {SetUniform("gWorld", Value);};
@@ -49,15 +50,4 @@ public:
 		Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapScale", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapPartOffset", 0));
 	}
-
-    /// Uniform setters
-	void SetUniform(std::string UniformName, int Value);
-	void SetUniform(std::string UniformName, mat4 Value);
-	void SetUniform(std::string UniformName, vec2 Value);
-	void SetUniform(std::string UniformName, float Value);
-	void SetUniform(std::string UniformName, vec3 Value);
-
-protected:
-    /// Initialize uniform variables, return false when failure, true on success
-    virtual bool InitializeUniforms();
 };

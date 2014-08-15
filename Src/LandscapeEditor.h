@@ -75,10 +75,10 @@ public:
     int OnExit();
 
     /// Read text from file
-    static char* TextFileRead(char *FilePath);
+    static char* TextFileRead(const char *FilePath);
 
     /// Write text to file
-    static int TextFileWrite(char *FilePath, char *Content);
+    static int TextFileWrite(const char *FilePath, char *Content);
 
     /// Read data from file
     static void* FileRead(const char *FilePath, unsigned int &ByteSize);

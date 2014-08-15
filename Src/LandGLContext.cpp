@@ -183,17 +183,17 @@ MovementModifier(10.0f), bNewLandscape(false)
     ResetCamera();
     ResetAllVBOIBO();
 
-    if (LandscapeShad.Initialize("Src/Shaders/Landscape.vs", "Src/Shaders/Landscape.fs") == false)
+    if (LandscapeShad.Initialize("Landscape") == false)
         FatalError("Landscape Shader init failed");
-    if (LightningOnlyShad.Initialize("Src/Shaders/LightningOnly.vs", "Src/Shaders/LightningOnly.fs") == false)
+    if (LightningOnlyShad.Initialize("LightningOnly") == false)
         FatalError("Lightning Only Shader init failed");
-    if (HeightShad.Initialize("Src/Shaders/Height.vs", "Src/Shaders/Height.fs") == false)
+    if (HeightShad.Initialize("Height") == false)
         FatalError("Height Shader init failed");
-    if (WireframeShad.Initialize("Src/Shaders/Wireframe.vs", "Src/Shaders/Wireframe.fs") == false)
+    if (WireframeShad.Initialize("Wireframe") == false)
         FatalError("Wireframe Shader init failed");
-	if (ClipmapWireframeShad.Initialize("Src/Shaders/ClipmapWireframe.vs", "Src/Shaders/ClipmapWireframe.fs") == false)
+	if (ClipmapWireframeShad.Initialize("ClipmapWireframe") == false)
         FatalError("Clipmap Wireframe Shader init failed");
-	if (ClipmapLandscapeShad.Initialize("Src/Shaders/ClipmapLandscape.vs", "Src/Shaders/ClipmapLandscape.fs") == false)
+	if (ClipmapLandscapeShad.Initialize("ClipmapLandscape") == false)
         FatalError("Clipmap Landscape Shader init failed");
     
 	SetShadersInitialUniforms();
@@ -212,7 +212,7 @@ MovementModifier(10.0f), bNewLandscape(false)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		LandscapeShad.SetLandscapeTexture(0);
+		LandscapeShad.SetTextureSampler(0);
 	}
 	else
 	{
@@ -229,7 +229,7 @@ MovementModifier(10.0f), bNewLandscape(false)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		LandscapeShad.SetBrushTexture(1);
+		LandscapeShad.SetBrushTextureSampler(1);
 	}
 	else
 	{
@@ -313,8 +313,8 @@ LandGLContext::~LandGLContext(void)
 void LandGLContext::SetShadersInitialUniforms()
 {
 	WireframeShad.Use();
-    WireframeShad.SetBrushTexture(1);
-    WireframeShad.SetTBO(2);
+    WireframeShad.SetBrushTextureSampler(1);
+    WireframeShad.SetTBOSampler(2);
     WireframeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     WireframeShad.SetBrushScale(1.0f);
     WireframeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(CLIPMAP_CENTER) + 1);
@@ -323,7 +323,7 @@ void LandGLContext::SetShadersInitialUniforms()
     WireframeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
 	WireframeShad.SetTestOffsetX(0.0f);
 	WireframeShad.SetTestOffsetY(0.0f);
-	WireframeShad.SetMVP(mat4(0.0f));
+	WireframeShad.SetgWorld(mat4(0.0f));
 	WireframeShad.SetClipmapPartOffset(vec2(0.0f, 0.0f));
 
 	ClipmapWireframeShad.Use();
@@ -343,8 +343,8 @@ void LandGLContext::SetShadersInitialUniforms()
 	ClipmapWireframeShad.SetClipmapPartOffset(vec2(0.0f, 0.0f));
 
 	LandscapeShad.Use();
-    LandscapeShad.SetBrushTexture(1);
-    LandscapeShad.SetTBO(2);
+    LandscapeShad.SetBrushTextureSampler(1);
+    LandscapeShad.SetTBOSampler(2);
     LandscapeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     LandscapeShad.SetBrushScale(1.0f);
     LandscapeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(CLIPMAP_CENTER) + 1);
@@ -353,13 +353,13 @@ void LandGLContext::SetShadersInitialUniforms()
     LandscapeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
 	LandscapeShad.SetTestOffsetX(0.0f);
 	LandscapeShad.SetTestOffsetY(0.0f);
-	LandscapeShad.SetMVP(mat4(0.0f));
+	LandscapeShad.SetgWorld(mat4(0.0f));
 	LandscapeShad.SetClipmapPartOffset(vec2(0.0f, 0.0f));
-	LandscapeShad.SetLandscapeTexture(0);
+	LandscapeShad.SetTextureSampler(0);
 
 	ClipmapLandscapeShad.Use();
-    ClipmapLandscapeShad.SetBrushTexture(1);
-    ClipmapLandscapeShad.SetTBO(2);
+    ClipmapLandscapeShad.SetBrushTextureSampler(1);
+    ClipmapLandscapeShad.SetTBOSampler(2);
     ClipmapLandscapeShad.SetBrushPosition(CurrentBrush.GetRenderPosition());
     ClipmapLandscapeShad.SetBrushScale(CurrentBrush.GetRadius() * 2.0f);
     ClipmapLandscapeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
@@ -367,12 +367,12 @@ void LandGLContext::SetShadersInitialUniforms()
 	ClipmapLandscapeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
 	ClipmapLandscapeShad.SetTestOffsetX(0.0f);
 	ClipmapLandscapeShad.SetTestOffsetY(0.0f);
-	ClipmapLandscapeShad.SetMVP(mat4(0.0f));
+	ClipmapLandscapeShad.SetgWorld(mat4(0.0f));
 	ClipmapLandscapeShad.SetClipmapScale(1.0f);
 	ClipmapLandscapeShad.SetClipmapSizeX(CurrentLandscape->GetTBOSize());
 	ClipmapLandscapeShad.SetClipmapSizeY(CurrentLandscape->GetTBOSize());
 	ClipmapLandscapeShad.SetClipmapPartOffset(vec2(0.0f, 0.0f));
-	ClipmapLandscapeShad.SetLandscapeTexture(0);
+	ClipmapLandscapeShad.SetTextureSampler(0);
 }
 
 // --------------------------------------------------------------------

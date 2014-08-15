@@ -54,7 +54,7 @@ int LandscapeEditor::OnExit()
 }
 
 // --------------------------------------------------------------------
-char* LandscapeEditor::TextFileRead(char* FilePath) 
+char* LandscapeEditor::TextFileRead(const char* FilePath) 
 {
 	FILE* File;
 	char* Content = NULL;
@@ -83,7 +83,7 @@ char* LandscapeEditor::TextFileRead(char* FilePath)
 }
 
 // --------------------------------------------------------------------
-int LandscapeEditor::TextFileWrite(char* FilePath, char* Content) 
+int LandscapeEditor::TextFileWrite(const char* FilePath, char* Content) 
 {
 	FILE* File;
 	int status = 0;

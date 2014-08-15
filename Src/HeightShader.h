@@ -15,27 +15,31 @@ using namespace glm;
 /** This shaders implicates colours on fragments dependly on its height */
 class HeightShader : public Shader
 {
-protected:
-    /// Uniforms
-    GLuint uMVP, uBrushPosition, uBrushScale, uBrushTexture, uTBO, uLandscapeSizeX, uLandscapeVertexOffset, uAmbientStrength, uDiffuseStrength, uMaxHeight;
-
 public:
-    /// Standard constructors
-    HeightShader();
-
     /// Uniform setters
-    void SetBrushTexture(int TextureUnit) {glUniform1i(uBrushTexture, TextureUnit);};
-    void SetTBO(int TBO) {glUniform1i(uTBO, TBO);};
-    void SetMVP(mat4 MVP) {glUniformMatrix4fv(uMVP, 1, GL_FALSE, &MVP[0][0]);};
-    void SetBrushPosition(vec2 BrushPosition) {glUniform2fv(uBrushPosition, 1, &BrushPosition[0]);};
-    void SetBrushScale(float BrushScale) {glUniform1f(uBrushScale, BrushScale);};
-    void SetLandscapeSizeX(float LandscapeSizeX) {glUniform1f(uLandscapeSizeX, LandscapeSizeX);};
-    void SetLandscapeVertexOffset(float LandscapeVertexOffset) {glUniform1f(uLandscapeVertexOffset, LandscapeVertexOffset);};
-    void SetAmbientStrength(float AmbientStrength) {glUniform1f(uAmbientStrength, AmbientStrength);};
-    void SetDiffuseStrength(float DiffuseStrength) {glUniform1f(uDiffuseStrength, DiffuseStrength);};
-    void SetMaxHeight(float MaxHeight) {glUniform1f(uMaxHeight, MaxHeight);};
+	void SetBrushTextureSampler(int Value) {SetUniform("BrushTextureSampler", Value);};
+	void SetTBOSampler(int Value) {SetUniform("TBOSampler", Value);};
+	void SetgWorld(mat4 Value) {SetUniform("gWorld", Value);};
+	void SetBrushPosition(vec2 Value) {SetUniform("BrushPosition", Value);};
+	void SetBrushScale(float Value) {SetUniform("BrushScale", Value);};
+	void SetLandscapeSizeX(float Value) {SetUniform("LandscapeSizeX", Value);};
+	void SetLandscapeVertexOffset(float Value) {SetUniform("LandscapeVertexOffset", Value);};
+	void SetDiffuseStrength(float Value) {SetUniform("DiffuseStrength", Value);};
+	void SetAmbientStrength(float Value) {SetUniform("AmbientStrength", Value);};
+	void SetMaxHeight(float Value) {SetUniform("MaxHeight", Value);};
 
-protected:
-    /// Initialize uniform variables, return false when failure, true on success
-    virtual bool InitializeUniforms();
+    /// Standard constructor
+	HeightShader()
+	{
+		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushTextureSampler", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("TBOSampler", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("gWorld", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushPosition", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushScale", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("LandscapeSizeX", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("LandscapeVertexOffset", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("DiffuseStrength", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("AmbientStrength", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("MaxHeight", 0));
+	}
 };
