@@ -33,24 +33,6 @@
     <ClCompile Include="Src\Shader.cpp">
       <Filter>Source\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="Src\WireframeShader.cpp">
-      <Filter>Source\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\LightningOnlyShader.cpp">
-      <Filter>Source\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\LandscapeShader.cpp">
-      <Filter>Source\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\ClipmapWireframeShader.cpp">
-      <Filter>Source\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\ClipmapLandscapeShader.cpp">
-      <Filter>Source\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\HeightShader.cpp">
-      <Filter>Source\Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="Src\LandGLCanvas.cpp">
       <Filter>Source\Window Management</Filter>
     </ClCompile>

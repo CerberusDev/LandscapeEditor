@@ -36,19 +36,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Brush.cpp" />
-    <ClCompile Include="Src\ClipmapLandscapeShader.cpp" />
-    <ClCompile Include="Src\ClipmapWireframeShader.cpp" />
-    <ClCompile Include="Src\HeightShader.cpp" />
     <ClCompile Include="Src\LandGLCanvas.cpp" />
     <ClCompile Include="Src\LandGLContext.cpp" />
     <ClCompile Include="Src\Landscape.cpp" />
     <ClCompile Include="Src\LandscapeEditor.cpp" />
     <ClCompile Include="Src\LandscapeEditorFrame.cpp" />
-    <ClCompile Include="Src\LandscapeShader.cpp" />
-    <ClCompile Include="Src\LightningOnlyShader.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\TextureManager.cpp" />
-    <ClCompile Include="Src\WireframeShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Brush.h" />
