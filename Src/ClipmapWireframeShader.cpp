@@ -43,7 +43,7 @@ bool ClipmapWireframeShader::InitializeUniforms()
 }
 
 // --------------------------------------------------------------------
-void ClipmapWireframeShader::SetUniform1i(std::string UniformName, int Value)
+void ClipmapWireframeShader::SetUniform(std::string UniformName, int Value)
 {
 	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
 
@@ -54,7 +54,7 @@ void ClipmapWireframeShader::SetUniform1i(std::string UniformName, int Value)
 }
 
 // --------------------------------------------------------------------
-void ClipmapWireframeShader::SetUniformM4fv(std::string UniformName, mat4 Value)
+void ClipmapWireframeShader::SetUniform(std::string UniformName, mat4 Value)
 {
 	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
 
@@ -65,7 +65,7 @@ void ClipmapWireframeShader::SetUniformM4fv(std::string UniformName, mat4 Value)
 }
 
 // --------------------------------------------------------------------
-void ClipmapWireframeShader::SetUniform2fv(std::string UniformName, vec2 Value)
+void ClipmapWireframeShader::SetUniform(std::string UniformName, vec2 Value)
 {
 	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
 
@@ -76,7 +76,7 @@ void ClipmapWireframeShader::SetUniform2fv(std::string UniformName, vec2 Value)
 }
 
 // --------------------------------------------------------------------
-void ClipmapWireframeShader::SetUniform1f(std::string UniformName, float Value)
+void ClipmapWireframeShader::SetUniform(std::string UniformName, float Value)
 {
 	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
 
@@ -87,7 +87,7 @@ void ClipmapWireframeShader::SetUniform1f(std::string UniformName, float Value)
 }
 
 // --------------------------------------------------------------------
-void ClipmapWireframeShader::SetUniform3fv(std::string UniformName, vec3 Value)
+void ClipmapWireframeShader::SetUniform(std::string UniformName, vec3 Value)
 {
 	std::unordered_map<std::string, GLuint>::const_iterator it = Uniforms.find(UniformName);
 

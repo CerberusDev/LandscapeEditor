@@ -327,20 +327,20 @@ void LandGLContext::SetShadersInitialUniforms()
 	WireframeShad.SetClipmapPartOffset(vec2(0.0f, 0.0f));
 
 	ClipmapWireframeShad.Use();
-	ClipmapWireframeShad.SetUniform1i("BrushTextureSampler", 1);
-	ClipmapWireframeShad.SetUniform1i("TBOSampler", 1);
-	ClipmapWireframeShad.SetUniform2fv("BrushPosition", CurrentBrush.GetRenderPosition());
-	ClipmapWireframeShad.SetUniform1f("BrushScale", CurrentBrush.GetRadius() * 2.0f);
-	ClipmapWireframeShad.SetUniform1f("LandscapeVertexOffset", CurrentLandscape->GetOffset());
-	ClipmapWireframeShad.SetUniform3fv("BrushColor", vec3(1.0f, 1.0f, 1.0f));
-	ClipmapWireframeShad.SetUniform3fv("WireframeColor", vec3(0.6f, 0.0f, 0.0f));
-	ClipmapWireframeShad.SetUniform1f("TestOffsetX", 0.0f);
-	ClipmapWireframeShad.SetUniform1f("TestOffsetY", 0.0f);
-	ClipmapWireframeShad.SetUniformM4fv("gWorld", mat4(0.0f));
-	ClipmapWireframeShad.SetUniform1f("ClipmapScale", 1.0f);
-	ClipmapWireframeShad.SetUniform1f("ClipmapSizeX", CurrentLandscape->GetTBOSize());
-	ClipmapWireframeShad.SetUniform1f("ClipmapSizeY", CurrentLandscape->GetTBOSize());
-	ClipmapWireframeShad.SetUniform2fv("ClipmapPartOffset", vec2(0.0f, 0.0f));
+	ClipmapWireframeShad.SetUniform("BrushTextureSampler", 1);
+	ClipmapWireframeShad.SetUniform("TBOSampler", 1);
+	ClipmapWireframeShad.SetUniform("BrushPosition", CurrentBrush.GetRenderPosition());
+	ClipmapWireframeShad.SetUniform("BrushScale", CurrentBrush.GetRadius() * 2.0f);
+	ClipmapWireframeShad.SetUniform("LandscapeVertexOffset", CurrentLandscape->GetOffset());
+	ClipmapWireframeShad.SetUniform("BrushColor", vec3(1.0f, 1.0f, 1.0f));
+	ClipmapWireframeShad.SetUniform("WireframeColor", vec3(0.6f, 0.0f, 0.0f));
+	ClipmapWireframeShad.SetUniform("TestOffsetX", 0.0f);
+	ClipmapWireframeShad.SetUniform("TestOffsetY", 0.0f);
+	ClipmapWireframeShad.SetUniform("gWorld", mat4(0.0f));
+	ClipmapWireframeShad.SetUniform("ClipmapScale", 1.0f);
+	ClipmapWireframeShad.SetUniform("ClipmapSizeX", (float)CurrentLandscape->GetTBOSize());
+	ClipmapWireframeShad.SetUniform("ClipmapSizeY", (float)CurrentLandscape->GetTBOSize());
+	ClipmapWireframeShad.SetUniform("ClipmapPartOffset", vec2(0.0f, 0.0f));
 
 	LandscapeShad.Use();
     LandscapeShad.SetBrushTexture(1);
@@ -457,19 +457,19 @@ void LandGLContext::DrawScene()
 	//}
 
 	ClipmapWireframeShad.Use();
-	ClipmapWireframeShad.SetUniformM4fv("gWorld", MVP);
-	ClipmapWireframeShad.SetUniform3fv("WireframeColor", vec3(0.0f, 0.0f, 0.0f));
+	ClipmapWireframeShad.SetUniform("gWorld", MVP);
+	ClipmapWireframeShad.SetUniform("WireframeColor", vec3(0.0f, 0.0f, 0.0f));
 
-	ClipmapWireframeShad.SetUniform1f("ClipmapScale", 1.0f);
+	ClipmapWireframeShad.SetUniform("ClipmapScale", 1.0f);
 	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
 
-	ClipmapWireframeShad.SetUniform1f("ClipmapScale", 2.0f);
+	ClipmapWireframeShad.SetUniform("ClipmapScale", 2.0f);
 	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
 
-	ClipmapWireframeShad.SetUniform1f("ClipmapScale", 4.0f);
+	ClipmapWireframeShad.SetUniform("ClipmapScale", 4.0f);
 	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
 
-	ClipmapWireframeShad.SetUniform1f("ClipmapScale", 8.0f);
+	ClipmapWireframeShad.SetUniform("ClipmapScale", 8.0f);
 	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
 
     glDisableVertexAttribArray(0);
@@ -708,25 +708,25 @@ void LandGLContext::ManageInput()
 	if (Keys[4])
 	{
 		OffsetY += (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetUniform1f("TestOffsetY", OffsetY);
+		ClipmapWireframeShad.SetUniform("TestOffsetY", OffsetY);
 		UpdateTBO();
 	}
 	if (Keys[5])
 	{
 		OffsetY -= (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetUniform1f("TestOffsetY", OffsetY);
+		ClipmapWireframeShad.SetUniform("TestOffsetY", OffsetY);
 		UpdateTBO();
 	}
 	if (Keys[6])
 	{
 		OffsetX -= (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetUniform1f("TestOffsetX", OffsetX);
+		ClipmapWireframeShad.SetUniform("TestOffsetX", OffsetX);
 		UpdateTBO();
 	}
 	if (Keys[7])
 	{
 		OffsetX += (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetUniform1f("TestOffsetX", OffsetX);
+		ClipmapWireframeShad.SetUniform("TestOffsetX", OffsetX);
 		UpdateTBO();
 	}
 
