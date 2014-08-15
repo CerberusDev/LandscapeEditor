@@ -54,10 +54,8 @@ protected:
     LandGLContext *m_glContext;
 
 public: 
-	///
+	/// Saved program initialization time stamp
 	static int InitTime;
-
-	enum ELog {LOG, WARN, ERR};
 
     /// Pointer to the main application frame (window)
     LandscapeEditorFrame* Frame;
