@@ -16,6 +16,21 @@ using namespace glm;
 class ClipmapWireframeShader : public Shader
 {
 public:
+	static const std::string BrushTextureSampler;
+	static const std::string TBOSampler;
+	static const std::string gWorld;
+	static const std::string BrushPosition;
+	static const std::string BrushScale;
+	static const std::string ClipmapSizeX;
+	static const std::string ClipmapSizeY;
+	static const std::string LandscapeVertexOffset;
+	static const std::string WireframeColor;
+	static const std::string BrushColor;
+	static const std::string TestOffsetX;
+	static const std::string TestOffsetY;
+	static const std::string ClipmapScale;
+	static const std::string ClipmapPartOffset;
+
     /// Standard constructors
     ClipmapWireframeShader();
 
