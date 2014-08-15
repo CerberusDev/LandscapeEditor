@@ -12,33 +12,38 @@
 
 using namespace glm;
 
-/** Shader for drawing black polygon outlines */
+/** Shader for drawing terrain outlines */
 class WireframeShader : public Shader
 {
-protected:
-    /// Uniforms
-    GLuint uMVP, uBrushPosition, uBrushScale, uBrushTexture, uTBO, uLandscapeSizeX, uLandscapeVertexOffset, uWireframeColor, uBrushColor, uTestOffsetY, uTestOffsetX, uClipmapPartOffset;
-
 public:
-    /// Standard constructors
-    WireframeShader();
-
     /// Uniform setters
-    void SetBrushTexture(int TextureUnit) {glUniform1i(uBrushTexture, TextureUnit);};
-    void SetTBO(int TBO) {glUniform1i(uTBO, TBO);};
-    void SetMVP(mat4 MVP) {glUniformMatrix4fv(uMVP, 1, GL_FALSE, &MVP[0][0]);};
-    void SetBrushPosition(vec2 BrushPosition) {glUniform2fv(uBrushPosition, 1, &BrushPosition[0]);};
-    void SetBrushScale(float BrushScale) {glUniform1f(uBrushScale, BrushScale);};
-    void SetLandscapeSizeX(float LandscapeSizeX) {glUniform1f(uLandscapeSizeX, LandscapeSizeX);};
-    void SetLandscapeVertexOffset(float LandscapeVertexOffset) {glUniform1f(uLandscapeVertexOffset, LandscapeVertexOffset);};
-    void SetWireframeColor(vec3 WireframeColor) {glUniform3fv(uWireframeColor, 1, &WireframeColor[0]);};
-    void SetBrushColor(vec3 BrushColor) {glUniform3fv(uBrushColor, 1, &BrushColor[0]);};
-	void SetTestOffsetX(float TestOffsetX) {glUniform1f(uTestOffsetX, TestOffsetX);};
-	void SetTestOffsetY(float TestOffsetY) {glUniform1f(uTestOffsetY, TestOffsetY);};
-	void SetClipmapPartOffset(vec2 ClipmapPartOffset) {glUniform2fv(uClipmapPartOffset, 1, &ClipmapPartOffset[0]);};
-	
+	void SetBrushTextureSampler(int Value) {SetUniform("BrushTextureSampler", Value);};
+	void SetTBOSampler(int Value) {SetUniform("TBOSampler", Value);};
+	void SetgWorld(mat4 Value) {SetUniform("gWorld", Value);};
+	void SetBrushPosition(vec2 Value) {SetUniform("BrushPosition", Value);};
+	void SetBrushScale(float Value) {SetUniform("BrushScale", Value);};
+	void SetLandscapeSizeX(float Value) {SetUniform("LandscapeSizeX", Value);};
+	void SetLandscapeVertexOffset(float Value) {SetUniform("LandscapeVertexOffset", Value);};
+	void SetWireframeColor(vec3 Value) {SetUniform("WireframeColor", Value);};
+	void SetBrushColor(vec3 Value) {SetUniform("BrushColor", Value);};
+	void SetTestOffsetX(float Value) {SetUniform("TestOffsetX", Value);};
+	void SetTestOffsetY(float Value) {SetUniform("TestOffsetY", Value);};
+	void SetClipmapPartOffset(vec2 Value) {SetUniform("ClipmapPartOffset", Value);};
 
-protected:
-    /// Initialize uniform variables, return false when failure, true on success
-    virtual bool InitializeUniforms();
+    /// Standard constructor
+	WireframeShader()
+	{
+		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushTextureSampler", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("TBOSampler", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("gWorld", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushPosition", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushScale", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("LandscapeSizeX", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("LandscapeVertexOffset", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("WireframeColor", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushColor", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("TestOffsetX", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("TestOffsetY", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapPartOffset", 0));
+	}
 };
