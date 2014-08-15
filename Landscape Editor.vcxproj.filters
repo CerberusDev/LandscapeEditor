@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\LandscapeEditor.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Src\LandGLContext.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -60,6 +57,9 @@
     <ClCompile Include="Src\LandscapeEditorFrame.cpp">
       <Filter>Source\Window Management</Filter>
     </ClCompile>
+    <ClCompile Include="Src\LandscapeEditor.cpp">
+      <Filter>Source\Window Management</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Shader.h">
@@ -95,9 +95,6 @@
     <ClInclude Include="Src\Landscape.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Src\LandscapeEditor.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Src\LandGLCanvas.h">
       <Filter>Source\Window Management</Filter>
     </ClInclude>
@@ -106,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Src\Resource.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LandscapeEditor.h">
+      <Filter>Source\Window Management</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
