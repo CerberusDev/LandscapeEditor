@@ -12,7 +12,7 @@
 
 using namespace glm;
 
-/** Shader for drawing black polygon outlines */
+/** Shader for drawing terrain with light and textures */
 class LandscapeShader : public Shader
 {
 public:

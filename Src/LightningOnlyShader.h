@@ -12,7 +12,7 @@
 
 using namespace glm;
 
-/** Shader which cause terrain to be render without landscape texture, only lightning */
+/** Shader which cause terrain to be render without landscape texture, only lightning intensity */
 class LightningOnlyShader : public Shader
 {
 public:

@@ -12,7 +12,7 @@
 
 using namespace glm;
 
-/** Shader for drawing black polygon outlines */
+/** Shader for drawing terrain outlines - clipmap compatible version */
 class ClipmapWireframeShader : public Shader
 {
 public:
