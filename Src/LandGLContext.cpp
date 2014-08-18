@@ -694,14 +694,34 @@ void LandGLContext::ManageInput()
         vec3 Up = cross(Right, Direction);
 
 		if (Keys[0])
-				CameraPosition += Direction * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)));
+		{
+			OffsetX += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle);
+			OffsetY += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle);
+			CameraPosition.y += (Direction * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
+		}
 		if (Keys[1])
-				CameraPosition -= Direction * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)));
+		{
+			OffsetX -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle);
+			OffsetY -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle);
+			CameraPosition.y -= (Direction * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
+		}
 		if (Keys[2])
-				CameraPosition += Right * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)));
+		{
+			OffsetX += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle - 3.14f/2.0f);
+			OffsetY += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle - 3.14f/2.0f);
+			CameraPosition.y += (Right * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
+		}
 		if (Keys[3])
-				CameraPosition -= Right * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)));
-    
+		{
+			OffsetX -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle - 3.14f/2.0f);
+			OffsetY -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle - 3.14f/2.0f);
+			CameraPosition.y -= (Right * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
+		}
+
+		ClipmapWireframeShad.SetTestOffsetX(OffsetX);
+		ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+		UpdateTBO();
+
 		View = lookAt(CameraPosition, CameraPosition + Direction, Up);
     }
 
