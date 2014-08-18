@@ -460,17 +460,12 @@ void LandGLContext::DrawScene()
 	ClipmapWireframeShad.SetgWorld(MVP);
 	ClipmapWireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
 
-	ClipmapWireframeShad.SetClipmapScale(1.0f);
-	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
-
-	ClipmapWireframeShad.SetClipmapScale(2.0f);
-	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
-
-	ClipmapWireframeShad.SetClipmapScale(4.0f);
-	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
-
-	ClipmapWireframeShad.SetClipmapScale(8.0f);
-	RenderLandscapeModule(CLIPMAP_CENTER, TBO);
+	float Scale = 1.0f;
+	for (int i = 0; i < 10; i++, Scale *= 2.0f)
+	{
+		ClipmapWireframeShad.SetClipmapScale(Scale);
+		RenderLandscapeModule(CLIPMAP_CENTER, TBO);
+	}
 
     glDisableVertexAttribArray(0);
 
