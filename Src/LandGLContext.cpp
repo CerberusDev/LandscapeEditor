@@ -41,7 +41,7 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(0), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), VisibleCenterClipmapStrip(CLIPMAP_STRIP_1), 
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(10), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), VisibleCenterClipmapStrip(CLIPMAP_STRIP_1), 
 VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(0), NORMALS_2(0), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN), 
 MovementModifier(10.0f), bNewLandscape(false)
 {
@@ -461,7 +461,7 @@ void LandGLContext::DrawScene()
 	ClipmapWireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
 
 	float Scale = 1.0f;
-	for (int i = 0; i < 10; i++, Scale *= 2.0f)
+	for (int i = 0; i < ClipmapsAmount; i++, Scale *= 2.0f)
 	{
 		ClipmapWireframeShad.SetClipmapScale(Scale);
 		RenderLandscapeModule(CLIPMAP_CENTER, TBO);
@@ -1161,7 +1161,7 @@ void LandGLContext::UpdateTBO()
 						BufferData32[4 * (yTBO * TBOSize + xTBO) + 2] = NORMALS[3 * (y * DataSize + x) + 2];
 						BufferData32[4 * (yTBO * TBOSize + xTBO) + 3] = DATA[y * DataSize + x];
 					}
-					LOG(int(mod((LastOffsetY / ClipmapScale - ((SignY > 0) ? (2.0f) : (1.0f))) + SignY * (j + 1), float(TBOSize))));
+					//LOG(int(mod((LastOffsetY / ClipmapScale - ((SignY > 0) ? (2.0f) : (1.0f))) + SignY * (j + 1), float(TBOSize))));
 				}
 
 				glUnmapBuffer(GL_TEXTURE_BUFFER);			
