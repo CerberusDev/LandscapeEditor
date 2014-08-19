@@ -682,6 +682,8 @@ void LandGLContext::ManageInput()
 {
 	static float MovementSpeed = 0.1f;
 
+	float CurrentMovementModifier = (Keys[8]) ? (MovementModifier) : (1.0f);
+
     if (Keys[0] || Keys[1] || Keys[2] || Keys[3])
     {
         vec3 Direction(cos(CameraVerticalAngle) * sin(CameraHorizontalAngle), sin(CameraVerticalAngle), cos(CameraVerticalAngle) * cos(CameraHorizontalAngle));
@@ -690,26 +692,26 @@ void LandGLContext::ManageInput()
 
 		if (Keys[0])
 		{
-			OffsetX += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle);
-			OffsetY += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle);
+			OffsetX += (CurrentMovementModifier * MovementSpeed * sin(CameraHorizontalAngle)) / CurrentLandscape->GetOffset();
+			OffsetY += (CurrentMovementModifier * MovementSpeed * cos(CameraHorizontalAngle)) / CurrentLandscape->GetOffset();
 			CameraPosition.y += (Direction * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
 		}
 		if (Keys[1])
 		{
-			OffsetX -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle);
-			OffsetY -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle);
+			OffsetX -= (CurrentMovementModifier * MovementSpeed * sin(CameraHorizontalAngle)) / CurrentLandscape->GetOffset();
+			OffsetY -= (CurrentMovementModifier * MovementSpeed * cos(CameraHorizontalAngle)) / CurrentLandscape->GetOffset();
 			CameraPosition.y -= (Direction * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
 		}
 		if (Keys[2])
 		{
-			OffsetX += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle - 3.14f/2.0f);
-			OffsetY += ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle - 3.14f/2.0f);
+			OffsetX += (CurrentMovementModifier * MovementSpeed * sin(CameraHorizontalAngle - 3.14f/2.0f)) / CurrentLandscape->GetOffset();
+			OffsetY += (CurrentMovementModifier * MovementSpeed * cos(CameraHorizontalAngle - 3.14f/2.0f)) / CurrentLandscape->GetOffset();
 			CameraPosition.y += (Right * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
 		}
 		if (Keys[3])
 		{
-			OffsetX -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * sin(CameraHorizontalAngle - 3.14f/2.0f);
-			OffsetY -= ((Keys[8]) ? (MovementModifier) : (1.0f)) * MovementSpeed * cos(CameraHorizontalAngle - 3.14f/2.0f);
+			OffsetX -= (CurrentMovementModifier * MovementSpeed * sin(CameraHorizontalAngle - 3.14f/2.0f)) / CurrentLandscape->GetOffset();
+			OffsetY -= (CurrentMovementModifier * MovementSpeed * cos(CameraHorizontalAngle - 3.14f/2.0f)) / CurrentLandscape->GetOffset();
 			CameraPosition.y -= (Right * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
 		}
 
@@ -720,30 +722,30 @@ void LandGLContext::ManageInput()
 		View = lookAt(CameraPosition, CameraPosition + Direction, Up);
     }
 
-	if (Keys[4])
-	{
-		OffsetY += (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetTestOffsetY(OffsetY);
-		UpdateTBO();
-	}
-	if (Keys[5])
-	{
-		OffsetY -= (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetTestOffsetY(OffsetY);
-		UpdateTBO();
-	}
-	if (Keys[6])
-	{
-		OffsetX -= (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-		UpdateTBO();
-	}
-	if (Keys[7])
-	{
-		OffsetX += (MovementSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f))) / CurrentLandscape->GetOffset();
-		ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-		UpdateTBO();
-	}
+	//if (Keys[4])
+	//{
+	//	OffsetY += (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
+	//	ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+	//	UpdateTBO();
+	//}
+	//if (Keys[5])
+	//{
+	//	OffsetY -= (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
+	//	ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+	//	UpdateTBO();
+	//}
+	//if (Keys[6])
+	//{
+	//	OffsetX -= (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
+	//	ClipmapWireframeShad.SetTestOffsetX(OffsetX);
+	//	UpdateTBO();
+	//}
+	//if (Keys[7])
+	//{
+	//	OffsetX += (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
+	//	ClipmapWireframeShad.SetTestOffsetX(OffsetX);
+	//	UpdateTBO();
+	//}
 
     //if (Keys[8] || Keys[9])
     //{
