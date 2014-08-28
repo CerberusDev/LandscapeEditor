@@ -19,14 +19,25 @@ RestartIndex(0xFFFFFFFF), Offset(1.0f), TBOSize(VerticesAmountX), VBOSize(0), IB
 	IBOSize = new unsigned int[CLIPMAP_MODULES_AMOUNT];
 
 	ClipmapVBOsSizeX[CLIPMAP_CENTER] = ClipmapVBOsSizeY[CLIPMAP_CENTER] = 18;
-	
-	ClipmapVBOsSizeX[CLIPMAP_STRIP_10] = ClipmapVBOsSizeY[CLIPMAP_STRIP_10] = 22;
+	ClipmapVBOsSizeX[CLIPMAP_STRIP_10] = ClipmapVBOsSizeY[CLIPMAP_STRIP_10] = 20;
+	ClipmapVBOsSizeX[CLIPMAP_STRIP_20] = ClipmapVBOsSizeY[CLIPMAP_STRIP_20] = 20;
+	ClipmapVBOsSizeX[CLIPMAP_STRIP_30] = ClipmapVBOsSizeY[CLIPMAP_STRIP_30] = 20;
+	ClipmapVBOsSizeX[CLIPMAP_STRIP_40] = ClipmapVBOsSizeY[CLIPMAP_STRIP_40] = 20;
 
 	CreateVBO(CLIPMAP_CENTER);
 	CreateIBO(CLIPMAP_CENTER);
 
 	CreateVBO(CLIPMAP_STRIP_10);
 	CreateIBO(CLIPMAP_STRIP_10);
+
+	CreateVBO(CLIPMAP_STRIP_20);
+	CreateIBO(CLIPMAP_STRIP_20);
+
+	CreateVBO(CLIPMAP_STRIP_30);
+	CreateIBO(CLIPMAP_STRIP_30);
+
+	CreateVBO(CLIPMAP_STRIP_40);
+	CreateIBO(CLIPMAP_STRIP_40);
 }
 
 // --------------------------------------------------------------------
@@ -78,12 +89,12 @@ void Landscape::CreateVBO(ClipmapModule Module)
 	int MissingVerticesX = SizeX / 2 - 1;
 	int RimVerticesX = (SizeX - MissingVerticesX) / 2;
 
-	if ((SquaresNum - 1) % 4 != 0 || SquaresNum < 9)
-		ERR("!!! ASSERT FAIL !!!   Bad landscape size!\n");
-
 	switch (Module)
 	{
 	case CLIPMAP_CENTER:
+
+		if ((SquaresNum - 1) % 4 != 0 || SquaresNum < 9)
+			ERR("!!! ASSERT FAIL !!!   Bad landscape size!\n");
 
 		VBOSize[Module] = 2 * (pow((float)SizeX, 2.0f) - pow(MissingVerticesX, 2.0f));
 		//VBOSize = 2 * pow((float)SizeX, 2.0f);
@@ -104,6 +115,10 @@ void Landscape::CreateVBO(ClipmapModule Module)
 
 		break;
 	case CLIPMAP_STRIP_10:
+
+		MissingVerticesX = SizeX - 4;
+		RimVerticesX = 2;
+
 		VBOSize[Module] = 2 * (pow((float)SizeX, 2.0f) - pow(MissingVerticesX, 2.0f));
 		//VBOSize = 2 * pow((float)SizeX, 2.0f);
 
@@ -122,8 +137,19 @@ void Landscape::CreateVBO(ClipmapModule Module)
 		}
 
 		break;
+	case CLIPMAP_STRIP_20:
+		VBOSize[Module] = VBOSize[CLIPMAP_STRIP_10];
+		ClipmapVBOsData[Module] = ClipmapVBOsData[CLIPMAP_STRIP_10];
+		break;
+	case CLIPMAP_STRIP_30:
+		VBOSize[Module] = VBOSize[CLIPMAP_STRIP_10];
+		ClipmapVBOsData[Module] = ClipmapVBOsData[CLIPMAP_STRIP_10];
+		break;
+	case CLIPMAP_STRIP_40:
+		VBOSize[Module] = VBOSize[CLIPMAP_STRIP_10];
+		ClipmapVBOsData[Module] = ClipmapVBOsData[CLIPMAP_STRIP_10];
+		break;
 	}
-
 }
 
 // --------------------------------------------------------------------
@@ -135,7 +161,7 @@ void Landscape::CreateIBO(ClipmapModule Module)
 
 	//int SquaresNum = SizeX - 1;
 	int MissingVerticesX = SizeX / 2 - 1;
-	int RimVerticesX = (SizeX - MissingVerticesX) / 2;2;
+	int RimVerticesX = (SizeX - MissingVerticesX) / 2;
 
 	// --- Working version for homogenous VBO, displays full quad without any hole ---
 	//IBOSize = (SizeY * 2) * (SizeX - 1) + (SizeX - 1);
@@ -155,8 +181,7 @@ void Landscape::CreateIBO(ClipmapModule Module)
 
 
 
-	IBOSize[Module] = (2 * ((SizeY * 2) + 1) + 2 * (((MissingVerticesX + 2) * 2) + 1)) * (RimVerticesX - 1);
-
+	//IBOSize[Module] = (2 * ((SizeY * 2) + 1) + 2 * (((MissingVerticesX + 2) * 2) + 1)) * (RimVerticesX - 1);
 	//IBOSize = ((SizeY * 2) + 1) * (RimVerticesX - 1) +
 	//		  (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1) +
 	//		  (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1) +
@@ -168,6 +193,7 @@ void Landscape::CreateIBO(ClipmapModule Module)
 	{
 	case CLIPMAP_CENTER:
 	{
+		IBOSize[Module] = (2 * ((SizeY * 2) + 1) + 2 * (((MissingVerticesX + 2) * 2) + 1)) * (RimVerticesX - 1);
 		ClipmapIBOsData[Module] = new unsigned int[IBOSize[Module]];
 
 		for (int x = 0; x < RimVerticesX-1; x++)
@@ -227,12 +253,16 @@ void Landscape::CreateIBO(ClipmapModule Module)
 	}
 	case CLIPMAP_STRIP_10:
 	{
+		MissingVerticesX = SizeX - 4;
+		RimVerticesX = 2;
 
+		IBOSize[Module] = (((SizeY - 1) * 2) + 1) * (RimVerticesX - 1) +
+						  (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1);
 		ClipmapIBOsData[Module] = new unsigned int[IBOSize[Module]];
 
 		for (int x = 0; x < RimVerticesX-1; x++)
 		{
-			for (int y = 0; y < SizeY; y++)
+			for (int y = 0; y < SizeY - 1; y++)
 			{
 				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y;
 				ClipmapIBOsData[Module][CurrentIndex++] = (x+1) * SizeX + y;
@@ -254,6 +284,91 @@ void Landscape::CreateIBO(ClipmapModule Module)
 			}
 			ClipmapIBOsData[Module][CurrentIndex++] = RestartIndex;
 		}
+		break;
+	}
+	case CLIPMAP_STRIP_20:
+	{
+		MissingVerticesX = SizeX - 4;
+		RimVerticesX = 2;
+
+		IBOSize[Module] = (((SizeY - 1) * 2) + 1) * (RimVerticesX - 1) +
+						  (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1);
+
+		ClipmapIBOsData[Module] = new unsigned int[IBOSize[Module]];
+
+		for (int x = 0; x < RimVerticesX-1; x++)
+		{
+			for (int y = 1; y < SizeY; y++)
+			{
+				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y;
+				ClipmapIBOsData[Module][CurrentIndex++] = (x+1) * SizeX + y;
+			}
+			ClipmapIBOsData[Module][CurrentIndex++] = RestartIndex;
+		}
+
+		for (int y = RimVerticesX + MissingVerticesX; y < SizeX-1; y++)
+		{
+			int Offset = 0;
+
+			for (int x = RimVerticesX-1; x < RimVerticesX + MissingVerticesX + 1; x++)
+			{
+				if (x > RimVerticesX-1 && x != RimVerticesX + MissingVerticesX)
+					Offset += MissingVerticesX;
+
+				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y + 1 - Offset;
+				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y - Offset;
+			}
+			ClipmapIBOsData[Module][CurrentIndex++] = RestartIndex;
+		}
+		break;
+	}
+	case CLIPMAP_STRIP_30:
+	{
+		MissingVerticesX = SizeX - 4;
+		RimVerticesX = 2;
+
+		IBOSize[Module] =  (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1) +
+						  (((SizeY - 1) * 2) + 1) * (RimVerticesX - 1);
+
+		ClipmapIBOsData[Module] = new unsigned int[IBOSize[Module]];
+
+		for (int y = 0; y < RimVerticesX-1; y++)
+		{
+			int Offset = 0;
+
+			for (int x = RimVerticesX-1; x < RimVerticesX + MissingVerticesX + 1; x++)
+			{
+				if (x > RimVerticesX)
+					Offset += MissingVerticesX;
+
+				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y + 1 - Offset;
+				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y - Offset;
+			}
+			ClipmapIBOsData[Module][CurrentIndex++] = RestartIndex;
+		}
+
+		int Offset = pow(MissingVerticesX, 2.0f);
+
+		for (int x = RimVerticesX + MissingVerticesX; x < SizeX-1; x++)
+		{
+			for (int y = 0; y < SizeY - 1; y++)
+			{
+				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y - Offset;
+				ClipmapIBOsData[Module][CurrentIndex++] = (x+1) * SizeX + y - Offset;
+			}
+			ClipmapIBOsData[Module][CurrentIndex++] = RestartIndex;
+		}
+		break;
+	}
+	case CLIPMAP_STRIP_40:
+	{
+		MissingVerticesX = SizeX - 4;
+		RimVerticesX = 2;
+
+		IBOSize[Module] = (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1) +
+						  (((SizeY - 1) * 2) + 1) * (RimVerticesX - 1);
+
+		ClipmapIBOsData[Module] = new unsigned int[IBOSize[Module]];
 
 		for (int y = RimVerticesX + MissingVerticesX; y < SizeX-1; y++)
 		{
@@ -274,16 +389,13 @@ void Landscape::CreateIBO(ClipmapModule Module)
 
 		for (int x = RimVerticesX + MissingVerticesX; x < SizeX-1; x++)
 		{
-			for (int y = 0; y < SizeY; y++)
+			for (int y = 1; y < SizeY; y++)
 			{
 				ClipmapIBOsData[Module][CurrentIndex++] = x * SizeX + y - Offset;
 				ClipmapIBOsData[Module][CurrentIndex++] = (x+1) * SizeX + y - Offset;
 			}
 			ClipmapIBOsData[Module][CurrentIndex++] = RestartIndex;
 		}
-
-
-
 		break;
 	}
 	}

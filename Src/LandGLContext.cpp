@@ -469,11 +469,46 @@ void LandGLContext::DrawScene()
 		RenderLandscapeModule(CLIPMAP_CENTER, TBO);
 	}
 
-	glLineWidth(2.0f);
-
 	ClipmapWireframeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
 	ClipmapWireframeShad.SetClipmapScale(1.0f);
-	RenderLandscapeModule(CLIPMAP_STRIP_10, TBO);
+
+	switch (VisibleCenterClipmapStrip)
+	{
+	case CLIPMAP_STRIP_1:
+		RenderLandscapeModule(CLIPMAP_STRIP_40, TBO);
+		break;
+	case CLIPMAP_STRIP_2:
+		RenderLandscapeModule(CLIPMAP_STRIP_20, TBO);
+		break;
+	case CLIPMAP_STRIP_3:
+		RenderLandscapeModule(CLIPMAP_STRIP_30, TBO);
+		break;
+	case CLIPMAP_STRIP_4:
+		RenderLandscapeModule(CLIPMAP_STRIP_10, TBO);
+		break;
+	}
+
+	Scale = 2.0f;
+	for (int i = 0; i < ClipmapsAmount - 1; i++, Scale *= 2.0f)
+	{
+		ClipmapWireframeShad.SetClipmapScale(Scale);
+
+		switch (VisibleClipmapStrips[i])
+		{
+		case CLIPMAP_STRIP_1:
+			RenderLandscapeModule(CLIPMAP_STRIP_40, TBO);
+			break;
+		case CLIPMAP_STRIP_2:
+			RenderLandscapeModule(CLIPMAP_STRIP_20, TBO);
+			break;
+		case CLIPMAP_STRIP_3:
+			RenderLandscapeModule(CLIPMAP_STRIP_30, TBO);
+			break;
+		case CLIPMAP_STRIP_4:
+			RenderLandscapeModule(CLIPMAP_STRIP_10, TBO);
+			break;
+		}
+	}
 
     glDisableVertexAttribArray(0);
 
