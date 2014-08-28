@@ -7,6 +7,10 @@
 #include "Brush.h"
 
 enum ClipmapModule		{CLIPMAP_CENTER, 
+						CLIPMAP_STRIP_10,
+						CLIPMAP_STRIP_20,
+						CLIPMAP_STRIP_30,
+						CLIPMAP_STRIP_40,
 						CLIPMAP_MODULES_AMOUNT};
 
 enum ClipmapStripPair	{CLIPMAP_STRIP_1, 
@@ -35,8 +39,8 @@ protected:
 	unsigned int *ClipmapVBOsSizeY;
 	unsigned int TBOSize;
 
-	unsigned int VBOSize;
-	unsigned int IBOSize;
+	unsigned int *VBOSize;
+	unsigned int *IBOSize;
 
 public:
     /// Standard constructors and destructor
