@@ -41,7 +41,7 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(4), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), VisibleCenterClipmapStrip(CLIPMAP_STRIP_1), 
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(5), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), VisibleCenterClipmapStrip(CLIPMAP_STRIP_1), 
 VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(0), NORMALS_2(0), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN), 
 MovementModifier(10.0f), bNewLandscape(false)
 {
@@ -509,6 +509,7 @@ void LandGLContext::DrawScene()
 			break;
 		}
 	}
+
 
     glDisableVertexAttribArray(0);
 
