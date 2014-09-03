@@ -170,44 +170,10 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 	{
 	case IBO_CENTER:
 	{
-		IBOSize[Mode] = ((SizeY * 2) + 1) * (RimVerticesX - 1) +
-						  ((MissingVerticesX + 2) * 2) * RimVerticesX +
-						  ((MissingVerticesX + 2) * 2) * RimVerticesX +
-						  ((SizeY * 2) + 1) * (RimVerticesX - 1);
-
+		IBOSize[Mode] = (SizeY * 2) * (SizeX - 1) + (SizeX - 1);
 		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
 
-		for (int x = 0; x < RimVerticesX-1; x++)
-		{
-			for (int y = 0; y < SizeY; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * SizeX + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * SizeX + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = RimVerticesX-1; x < RimVerticesX + MissingVerticesX; x++)
-		{
-			for (int y = 0; y < RimVerticesX; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * SizeX + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * SizeX + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = RimVerticesX-1; x < RimVerticesX + MissingVerticesX; x++)
-		{
-			for (int y = RimVerticesX + MissingVerticesX; y < SizeX; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * SizeX + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * SizeX + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = RimVerticesX + MissingVerticesX; x < SizeX-1; x++)
+		for (int x = 0; x < SizeX - 1; x++)
 		{
 			for (int y = 0; y < SizeY; y++)
 			{

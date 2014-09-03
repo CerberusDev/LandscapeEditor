@@ -464,8 +464,11 @@ void LandGLContext::DrawScene()
 
 	glLineWidth(1.0f);
 
-	float Scale = 1.0f;
-	for (int i = 0; i < ClipmapsAmount; i++, Scale *= 2.0f)
+	ClipmapWireframeShad.SetClipmapScale(1.0f);
+	RenderLandscapeModule(VBO_CLIPMAP, IBO_CENTER, TBO);
+
+	float Scale = 2.0f;
+	for (int i = 1; i < ClipmapsAmount; i++, Scale *= 2.0f)
 	{
 		ClipmapWireframeShad.SetClipmapScale(Scale);
 		RenderLandscapeModule(VBO_CLIPMAP, IBO_CLIPMAP, TBO);
