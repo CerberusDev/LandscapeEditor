@@ -87,13 +87,15 @@ MovementModifier(10.0f), bNewLandscape(false)
 	for (int i = 0; i < ClipmapsAmount; ++i)
 		VisibleClipmapStrips[i] = CLIPMAP_STRIP_1;
 
-	VBOs = new GLuint[CLIPMAP_MODULES_AMOUNT];
-	IBOs = new GLuint[CLIPMAP_MODULES_AMOUNT];
-	IBOLengths = new int[CLIPMAP_MODULES_AMOUNT];
+	VBOs = new GLuint[VBO_MODES_AMOUNT];
+	IBOs = new GLuint[IBO_MODES_AMOUNT];
+	IBOLengths = new int[IBO_MODES_AMOUNT];
 
-	for (int i = 0; i < CLIPMAP_MODULES_AMOUNT; ++i)
-	{
+	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
 		VBOs[i] = 0;
+
+	for (int i = 0; i < IBO_MODES_AMOUNT; ++i)
+	{
 		IBOs[i] = 0;
 		IBOLengths[i] = 0;
 	}
@@ -293,8 +295,8 @@ MovementModifier(10.0f), bNewLandscape(false)
 // --------------------------------------------------------------------
 LandGLContext::~LandGLContext(void)
 {
-	glDeleteBuffers(CLIPMAP_MODULES_AMOUNT, VBOs);
-	glDeleteBuffers(CLIPMAP_MODULES_AMOUNT, IBOs);
+	glDeleteBuffers(VBO_MODES_AMOUNT, VBOs);
+	glDeleteBuffers(IBO_MODES_AMOUNT, IBOs);
 	glDeleteBuffers(1, &TBO);
 	glDeleteBuffers(ClipmapsAmount, TBOs);
 
@@ -317,7 +319,7 @@ void LandGLContext::SetShadersInitialUniforms()
     WireframeShad.SetTBOSampler(2);
     WireframeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     WireframeShad.SetBrushScale(1.0f);
-    WireframeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(CLIPMAP_CENTER) + 1);
+    WireframeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(VBO_CLIPMAP) + 1);
     WireframeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     WireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
     WireframeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
@@ -347,7 +349,7 @@ void LandGLContext::SetShadersInitialUniforms()
     LandscapeShad.SetTBOSampler(2);
     LandscapeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     LandscapeShad.SetBrushScale(1.0f);
-    LandscapeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(CLIPMAP_CENTER) + 1);
+    LandscapeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(VBO_CLIPMAP) + 1);
     LandscapeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     LandscapeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
     LandscapeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
@@ -466,7 +468,7 @@ void LandGLContext::DrawScene()
 	for (int i = 0; i < ClipmapsAmount; i++, Scale *= 2.0f)
 	{
 		ClipmapWireframeShad.SetClipmapScale(Scale);
-		RenderLandscapeModule(CLIPMAP_CENTER, TBO);
+		RenderLandscapeModule(VBO_CLIPMAP, IBO_CLIPMAP, TBO);
 	}
 
 	ClipmapWireframeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
@@ -475,16 +477,16 @@ void LandGLContext::DrawScene()
 	switch (VisibleCenterClipmapStrip)
 	{
 	case CLIPMAP_STRIP_1:
-		RenderLandscapeModule(CLIPMAP_STRIP_40, TBO);
+		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_4, TBO);
 		break;
 	case CLIPMAP_STRIP_2:
-		RenderLandscapeModule(CLIPMAP_STRIP_20, TBO);
+		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_2, TBO);
 		break;
 	case CLIPMAP_STRIP_3:
-		RenderLandscapeModule(CLIPMAP_STRIP_30, TBO);
+		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_3, TBO);
 		break;
 	case CLIPMAP_STRIP_4:
-		RenderLandscapeModule(CLIPMAP_STRIP_10, TBO);
+		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_1, TBO);
 		break;
 	}
 
@@ -496,16 +498,16 @@ void LandGLContext::DrawScene()
 		switch (VisibleClipmapStrips[i])
 		{
 		case CLIPMAP_STRIP_1:
-			RenderLandscapeModule(CLIPMAP_STRIP_40, TBO);
+			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_4, TBO);
 			break;
 		case CLIPMAP_STRIP_2:
-			RenderLandscapeModule(CLIPMAP_STRIP_20, TBO);
+			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_2, TBO);
 			break;
 		case CLIPMAP_STRIP_3:
-			RenderLandscapeModule(CLIPMAP_STRIP_30, TBO);
+			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_3, TBO);
 			break;
 		case CLIPMAP_STRIP_4:
-			RenderLandscapeModule(CLIPMAP_STRIP_10, TBO);
+			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_1, TBO);
 			break;
 		}
 	}
@@ -518,16 +520,16 @@ void LandGLContext::DrawScene()
 }
 
 // --------------------------------------------------------------------
-void LandGLContext::RenderLandscapeModule(const ClipmapModule Module, GLuint TBOID)
+void LandGLContext::RenderLandscapeModule(const ClipmapVBOMode VBOMode, const ClipmapIBOMode IBOMode, GLuint TBOID)
 {
 	glBindBuffer(GL_TEXTURE_BUFFER, TBOID);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, TBOID);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[Module]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOMode]);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBOs[Module]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBOs[IBOMode]);
 
-	glDrawElements(GL_TRIANGLE_STRIP, IBOLengths[Module], GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLE_STRIP, IBOLengths[IBOMode], GL_UNSIGNED_INT, 0);
 }
 
 // --------------------------------------------------------------------
@@ -984,15 +986,19 @@ void LandGLContext::ResetIBO(GLuint &BufferID, unsigned int *NewData, int DataSi
 // --------------------------------------------------------------------
 void LandGLContext::ResetAllVBOIBO()
 {
-	float **ClipmapVBOsData = new float*[CLIPMAP_MODULES_AMOUNT];
-	unsigned int **ClipmapIBOsData = new unsigned int*[CLIPMAP_MODULES_AMOUNT];
-	int *ClipmapVBOsSize = new int[CLIPMAP_MODULES_AMOUNT];
+	float **ClipmapVBOsData = new float*[VBO_MODES_AMOUNT];
+	unsigned int **ClipmapIBOsData = new unsigned int*[IBO_MODES_AMOUNT];
+	int *ClipmapVBOsSize = new int[VBO_MODES_AMOUNT];
 
-	for (int i = 0; i < CLIPMAP_MODULES_AMOUNT; ++i)
+	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
 	{
-		ClipmapVBOsData[i] = CurrentLandscape->GetClipmapVBOData((ClipmapModule)i, ClipmapVBOsSize[i]);
-		ClipmapIBOsData[i] = CurrentLandscape->GetClipmapIBOData((ClipmapModule)i, IBOLengths[i]);
+		ClipmapVBOsData[i] = CurrentLandscape->GetClipmapVBOData((ClipmapVBOMode)i, ClipmapVBOsSize[i]);
 		ResetVBO(VBOs[i], ClipmapVBOsData[i], ClipmapVBOsSize[i]);
+	}
+
+	for (int i = 0; i < IBO_MODES_AMOUNT; ++i)
+	{
+		ClipmapIBOsData[i] = CurrentLandscape->GetClipmapIBOData((ClipmapIBOMode)i, IBOLengths[i]);
 		ResetIBO(IBOs[i], ClipmapIBOsData[i], IBOLengths[i]);
 	}
 

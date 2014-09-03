@@ -6,12 +6,17 @@
 
 #include "Brush.h"
 
-enum ClipmapModule		{CLIPMAP_CENTER, 
-						CLIPMAP_STRIP_10,
-						CLIPMAP_STRIP_20,
-						CLIPMAP_STRIP_30,
-						CLIPMAP_STRIP_40,
-						CLIPMAP_MODULES_AMOUNT};
+enum ClipmapVBOMode		{VBO_CLIPMAP,
+						VBO_STRIPS,
+						VBO_MODES_AMOUNT};
+
+enum ClipmapIBOMode		{IBO_CENTER,
+						IBO_CLIPMAP,
+						IBO_STRIP_1,
+						IBO_STRIP_2,
+						IBO_STRIP_3,
+						IBO_STRIP_4,
+						IBO_MODES_AMOUNT};
 
 enum ClipmapStripPair	{CLIPMAP_STRIP_1, 
 						CLIPMAP_STRIP_2, 
@@ -55,10 +60,10 @@ public:
     void UpdateHeightmap(Brush &AffectingBrush);
 
     /// Getters
-	float * GetClipmapVBOData(ClipmapModule Module, int &outDataAmount);
-	unsigned int * GetClipmapIBOData(ClipmapModule Module, int &outDataAmount);
-	unsigned int GetClipmapVBOSizeX(ClipmapModule Module) {return ClipmapVBOsSizeX[Module];};
-	unsigned int GetClipmapVBOSizeY(ClipmapModule Module) {return ClipmapVBOsSizeY[Module];};
+	float * GetClipmapVBOData(ClipmapVBOMode Mode, int &outDataAmount);
+	unsigned int * GetClipmapIBOData(ClipmapIBOMode Mode, int &outDataAmount);
+	unsigned int GetClipmapVBOSizeX(ClipmapVBOMode Mode) {return ClipmapVBOsSizeX[Mode];};
+	unsigned int GetClipmapVBOSizeY(ClipmapVBOMode Mode) {return ClipmapVBOsSizeY[Mode];};
 	unsigned int GetTBOSize() {return TBOSize;};
     float * GetHeightmap(int &VerticesAmountX);
     float GetOffset() {return Offset;};
@@ -67,6 +72,6 @@ public:
 	Landscape & operator= (Landscape & other) {return other;};
    
 protected: 
-	void CreateVBO(ClipmapModule Module);
-	void CreateIBO(ClipmapModule Module);
+	void CreateVBO(ClipmapVBOMode Mode);
+	void CreateIBO(ClipmapIBOMode Mode);
 };

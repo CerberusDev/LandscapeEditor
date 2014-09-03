@@ -154,7 +154,7 @@ protected:
 
 	void InitTBO(GLuint TBOID, const bool bClipmapCenter, int ClipmapScale = 1);
 	void SetShadersInitialUniforms();
-	void RenderLandscapeModule(const ClipmapModule Module, GLuint TBOID);
+	void RenderLandscapeModule(const ClipmapVBOMode VBOMode, const ClipmapIBOMode IBOMode, GLuint TBOID);
 	void ResetVBO(GLuint &BufferID, float *NewData, int DataSize);
 	void ResetIBO(GLuint &BufferID, unsigned int *NewData, int DataSize);
 	float getSecond();
