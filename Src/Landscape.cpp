@@ -139,32 +139,8 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 		SizeY = ClipmapVBOsSizeX[VBO_STRIPS];
 	}
 
-	//int SquaresNum = SizeX - 1;
 	int MissingVerticesX = SizeX / 2 - 1;
 	int RimVerticesX = (SizeX - MissingVerticesX) / 2;
-
-	// --- Working version for homogenous VBO, displays full quad without any hole ---
-	//IBOSize = (SizeY * 2) * (SizeX - 1) + (SizeX - 1);
-
- //   ClipmapIBOsData[Mode] = new unsigned int[IBOSize];
-
-	//for (int x = 0; x < SquaresNum; x++)
- //   {
- //       for (int y = 0; y < SizeY; y++)
- //       {
- //           ClipmapIBOsData[Mode][CurrentIndex++] = x * SizeX + y;
- //           ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * SizeX + y;
- //       }
- //       ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
- //   }
-
-
-	//IBOSize[Mode] = (2 * ((SizeY * 2) + 1) + 2 * (((MissingVerticesX + 2) * 2) + 1)) * (RimVerticesX - 1);
-	//IBOSize = ((SizeY * 2) + 1) * (RimVerticesX - 1) +
-	//		  (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1) +
-	//		  (((MissingVerticesX + 2) * 2) + 1) * (RimVerticesX - 1) +
-	//		  ((SizeY * 2) + 1) * (RimVerticesX - 1);
-
 
 	switch (Mode)
 	{
