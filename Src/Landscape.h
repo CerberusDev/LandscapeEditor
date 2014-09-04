@@ -40,8 +40,7 @@ protected:
 
 	float **ClipmapVBOsData;
 	unsigned int **ClipmapIBOsData;
-	unsigned int *ClipmapVBOsSizeX;
-	unsigned int *ClipmapVBOsSizeY;
+	unsigned int *ClipmapVBOsWidth;
 	unsigned int TBOSize;
 
 	unsigned int *VBOSize;
@@ -62,8 +61,7 @@ public:
     /// Getters
 	float * GetClipmapVBOData(ClipmapVBOMode Mode, int &outDataAmount);
 	unsigned int * GetClipmapIBOData(ClipmapIBOMode Mode, int &outDataAmount);
-	unsigned int GetClipmapVBOSizeX(ClipmapVBOMode Mode) {return ClipmapVBOsSizeX[Mode];};
-	unsigned int GetClipmapVBOSizeY(ClipmapVBOMode Mode) {return ClipmapVBOsSizeY[Mode];};
+	unsigned int GetClipmapVBOWidth(ClipmapVBOMode Mode) {return ClipmapVBOsWidth[Mode];};
 	unsigned int GetTBOSize() {return TBOSize;};
     float * GetHeightmap(int &VerticesAmountX);
     float GetOffset() {return Offset;};

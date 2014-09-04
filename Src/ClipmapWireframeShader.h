@@ -22,8 +22,7 @@ public:
 	void SetgWorld(mat4 Value) {SetUniform("gWorld", Value);};
 	void SetBrushPosition(vec2 Value) {SetUniform("BrushPosition", Value);};
 	void SetBrushScale(float Value) {SetUniform("BrushScale", Value);};
-	void SetClipmapSizeX(float Value) {SetUniform("ClipmapSizeX", Value);};
-	void SetClipmapSizeY(float Value) {SetUniform("ClipmapSizeY", Value);};
+	void SetClipmapWidth(float Value) {SetUniform("ClipmapWidth", Value);};
 	void SetLandscapeVertexOffset(float Value) {SetUniform("LandscapeVertexOffset", Value);};
 	void SetWireframeColor(vec3 Value) {SetUniform("WireframeColor", Value);};
 	void SetBrushColor(vec3 Value) {SetUniform("BrushColor", Value);};
@@ -40,8 +39,7 @@ public:
 		Uniforms.insert(std::make_pair<std::string, GLuint>("gWorld", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushPosition", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushScale", 0));
-		Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapSizeX", 0));
-		Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapSizeY", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapWidth", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("LandscapeVertexOffset", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("WireframeColor", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushColor", 0));

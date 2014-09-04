@@ -319,7 +319,7 @@ void LandGLContext::SetShadersInitialUniforms()
     WireframeShad.SetTBOSampler(2);
     WireframeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     WireframeShad.SetBrushScale(1.0f);
-    WireframeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(VBO_CLIPMAP) + 1);
+    WireframeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOWidth(VBO_CLIPMAP) + 1);
     WireframeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     WireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
     WireframeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
@@ -340,8 +340,7 @@ void LandGLContext::SetShadersInitialUniforms()
 	ClipmapWireframeShad.SetTestOffsetY(0.0f);
 	ClipmapWireframeShad.SetgWorld(mat4(0.0f));
 	ClipmapWireframeShad.SetClipmapScale(1.0f);
-	ClipmapWireframeShad.SetClipmapSizeX(CurrentLandscape->GetTBOSize());
-	ClipmapWireframeShad.SetClipmapSizeY(CurrentLandscape->GetTBOSize());
+	ClipmapWireframeShad.SetClipmapWidth(CurrentLandscape->GetTBOSize());
 	ClipmapWireframeShad.SetClipmapPartOffset(vec2(0.0f, 0.0f));
 
 	LandscapeShad.Use();
@@ -349,7 +348,7 @@ void LandGLContext::SetShadersInitialUniforms()
     LandscapeShad.SetTBOSampler(2);
     LandscapeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     LandscapeShad.SetBrushScale(1.0f);
-    LandscapeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOSizeX(VBO_CLIPMAP) + 1);
+    LandscapeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOWidth(VBO_CLIPMAP) + 1);
     LandscapeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     LandscapeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
     LandscapeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));

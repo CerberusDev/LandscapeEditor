@@ -4,8 +4,7 @@ layout (location = 0) in vec2 Position;
 
 out vec2 UV;
 
-uniform float ClipmapSizeX;
-uniform float ClipmapSizeY;
+uniform float ClipmapWidth;
 uniform float LandscapeVertexOffset;
 uniform mat4 gWorld;
 uniform samplerBuffer TBOSampler;
@@ -48,16 +47,16 @@ void main()
 	BaseX = Position.x * ClipmapScale;
 	BaseY = Position.y * ClipmapScale;
 
-	ConvertedX = Position.x / LandscapeVertexOffset + (ClipmapSizeX - 1) / 2.0;				
-	ConvertedY = Position.y / LandscapeVertexOffset + (ClipmapSizeY - 1) / 2.0;
+	ConvertedX = Position.x / LandscapeVertexOffset + (ClipmapWidth - 1) / 2.0;				
+	ConvertedY = Position.y / LandscapeVertexOffset + (ClipmapWidth - 1) / 2.0;
 
 	ModifiedX = ConvertedX + iCameraOffsetX;
 	ModifiedY = ConvertedY + iCameraOffsetY;
 
-	ClippedY = mod(ModifiedY, ClipmapSizeY);
-	ClippedX = mod(ModifiedX, ClipmapSizeX);
+	ClippedY = mod(ModifiedY, ClipmapWidth);
+	ClippedX = mod(ModifiedX, ClipmapWidth);
 
-	VertexIndex = int(ClippedY * ClipmapSizeX + ClippedX);
+	VertexIndex = int(ClippedY * ClipmapWidth + ClippedX);
 
 	VertexHeight = texelFetch(TBOSampler, VertexIndex).w;
 		
