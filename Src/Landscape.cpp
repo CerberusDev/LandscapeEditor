@@ -7,8 +7,8 @@
 #include "LandscapeEditor.h"
 
 // --------------------------------------------------------------------
-Landscape::Landscape(int VerticesAmountX):
-RestartIndex(0xFFFFFFFF), Offset(1.0f), TBOSize(VerticesAmountX), VBOSize(0), IBOSize(0)
+Landscape::Landscape(int ClipmapRimWidth):
+RestartIndex(0xFFFFFFFF), Offset(1.0f), TBOSize(ClipmapRimWidth), VBOSize(0), IBOSize(0)
 {
 	ClipmapVBOsData = new float*[VBO_MODES_AMOUNT];
 	ClipmapIBOsData = new unsigned int*[IBO_MODES_AMOUNT];
@@ -17,8 +17,8 @@ RestartIndex(0xFFFFFFFF), Offset(1.0f), TBOSize(VerticesAmountX), VBOSize(0), IB
 	VBOSize = new unsigned int[VBO_MODES_AMOUNT];
 	IBOSize = new unsigned int[IBO_MODES_AMOUNT];
 
-	ClipmapVBOsWidth[VBO_CLIPMAP] = 22;
-	ClipmapVBOsWidth[VBO_STRIPS] = 24;
+	ClipmapVBOsWidth[VBO_CLIPMAP] = ClipmapRimWidth * 4 + 2;
+	ClipmapVBOsWidth[VBO_STRIPS] = (ClipmapRimWidth + 1) * 4;
 
 	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
 		CreateVBO((ClipmapVBOMode)i);
