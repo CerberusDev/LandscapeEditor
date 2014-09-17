@@ -42,9 +42,8 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(1), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), VisibleCenterClipmapStrip(CLIPMAP_STRIP_1), 
-VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(0), NORMALS_2(0), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN), 
-MovementModifier(10.0f), bNewLandscape(false)
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(1), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
+VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(0), NORMALS_2(0), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
 	DataSize = 20;
@@ -474,7 +473,7 @@ void LandGLContext::DrawScene()
 		break;
 	}
 
-	switch (VisibleCenterClipmapStrip)
+	switch (VisibleClipmapStrips[0])
 	{
 	case CLIPMAP_STRIP_1:
 		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_4, TBOs[0]);
@@ -499,7 +498,7 @@ void LandGLContext::DrawScene()
 		case WIREFRAME: ClipmapWireframeShad.SetClipmapScale(Scale); break;
 		}
 
-		switch (VisibleClipmapStrips[i-1])
+		switch (VisibleClipmapStrips[i])
 		{
 		case CLIPMAP_STRIP_1:
 			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_4, TBOs[i]);
@@ -951,7 +950,6 @@ void LandGLContext::OpenFromFile(const char* FilePath)
 	ResetCamera();
 	SetShadersInitialUniforms();
 
-	VisibleCenterClipmapStrip = CLIPMAP_STRIP_1;
 	for (int i = 0; i < ClipmapsAmount; ++i)
 		VisibleClipmapStrips[i] = CLIPMAP_STRIP_1;
 
@@ -1129,15 +1127,15 @@ void LandGLContext::UpdateTBO()
 	if (fDiffX < 0.0f)
 	{
 		if (fDiffY < 0.0f)
-			VisibleCenterClipmapStrip = CLIPMAP_STRIP_1;
+			VisibleClipmapStrips[0] = CLIPMAP_STRIP_1;
 		else
-			VisibleCenterClipmapStrip = CLIPMAP_STRIP_2;
+			VisibleClipmapStrips[0] = CLIPMAP_STRIP_2;
 	}
 	else
 	{
 		if (fDiffY < 0.0f)
-			VisibleCenterClipmapStrip = CLIPMAP_STRIP_3;
+			VisibleClipmapStrips[0] = CLIPMAP_STRIP_3;
 		else
-			VisibleCenterClipmapStrip = CLIPMAP_STRIP_4;
+			VisibleClipmapStrips[0] = CLIPMAP_STRIP_4;
 	}
 }

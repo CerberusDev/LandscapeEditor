@@ -92,7 +92,6 @@ protected:
 	float *NORMALS_2;
 	int DataSize;
 
-	ClipmapStripPair VisibleCenterClipmapStrip;
 	ClipmapStripPair *VisibleClipmapStrips;
 
 	LARGE_INTEGER frequency;
