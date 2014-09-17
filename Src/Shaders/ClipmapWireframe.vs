@@ -8,58 +8,40 @@ uniform float ClipmapWidth;
 uniform float LandscapeVertexOffset;
 uniform mat4 gWorld;
 uniform samplerBuffer TBOSampler;
-
 uniform float TestOffsetX;
 uniform float TestOffsetY;
-
 uniform float ClipmapScale;
 uniform vec2 ClipmapPartOffset;
 
-highp int VertexIndex;
-float VertexHeight;
-float BaseX;
-float BaseY;
-float ConvertedX;
-float ConvertedY;
-float ModifiedX;
-float ModifiedY;
-float ClippedX;
-float ClippedY;
-float ClippedX1;
-float ClippedY1;
-float ClippedX2;
-float ClippedY2;
 
-int iCameraOffsetX;
-int iCameraOffsetY;
+int CalculateTBOIndex(const in float PosX, const in float PosY, const in int CameraOffsetX, const in int CameraOffsetY)
+{
+	float ConvertedX = PosX + (ClipmapWidth - 3) / 2.0;				
+	float ConvertedY = PosY + (ClipmapWidth - 3) / 2.0;
 
-float VertexOffsetX;
-float VertexOffsetY;
+	float ModifiedX = ConvertedX + CameraOffsetX;
+	float ModifiedY = ConvertedY + CameraOffsetY;
+
+	float ClippedY = mod(ModifiedY, ClipmapWidth);
+	float ClippedX = mod(ModifiedX, ClipmapWidth);
+
+	return int(ClippedY * ClipmapWidth + ClippedX);
+}
 
 void main()
 {
-	iCameraOffsetX = int(floor(TestOffsetX / ClipmapScale));
-	iCameraOffsetY = int(floor(TestOffsetY / ClipmapScale));
+	float VertexOffsetX = mod(TestOffsetX, ClipmapScale);
+	float VertexOffsetY = mod(TestOffsetY, ClipmapScale);
 
-	VertexOffsetX = mod(TestOffsetX, ClipmapScale);
-	VertexOffsetY = mod(TestOffsetY, ClipmapScale);
+	float BaseX = Position.x * ClipmapScale;
+	float BaseY = Position.y * ClipmapScale;
 
-	BaseX = Position.x * ClipmapScale;
-	BaseY = Position.y * ClipmapScale;
+	int iCameraOffsetX = int(floor(TestOffsetX / ClipmapScale));
+	int iCameraOffsetY = int(floor(TestOffsetY / ClipmapScale));
 
-	ConvertedX = Position.x / LandscapeVertexOffset + (ClipmapWidth - 1) / 2.0;				
-	ConvertedY = Position.y / LandscapeVertexOffset + (ClipmapWidth - 1) / 2.0;
-
-	ModifiedX = ConvertedX + iCameraOffsetX;
-	ModifiedY = ConvertedY + iCameraOffsetY;
-
-	ClippedY = mod(ModifiedY, ClipmapWidth);
-	ClippedX = mod(ModifiedX, ClipmapWidth);
-
-	VertexIndex = int(ClippedY * ClipmapWidth + ClippedX);
-
-	VertexHeight = texelFetch(TBOSampler, VertexIndex).w;
+	int TBOIndex = CalculateTBOIndex(Position.x, Position.y, iCameraOffsetX, iCameraOffsetY);
+	float VertexHeight = texelFetch(TBOSampler, TBOIndex).w;
 		
-    gl_Position = gWorld * vec4(BaseX - VertexOffsetX * LandscapeVertexOffset, VertexHeight + ClipmapPartOffset.x * 0.0000001, BaseY - VertexOffsetY * LandscapeVertexOffset, 1.0);
+    gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight + ClipmapPartOffset.x * 0.0000001, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
 	UV = vec2(Position.x, Position.y);
 }
