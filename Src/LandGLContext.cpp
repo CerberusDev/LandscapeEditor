@@ -42,11 +42,14 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(1), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(12), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
 VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(0), NORMALS_2(0), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
-	DataSize = 20;
+
+	DataSize = 5000;
+	StartIndexX = StartIndexY = 2500;
+
 	DATA = new float[DataSize * DataSize];
 
 	LOG("Generating terrain data...");
@@ -59,27 +62,26 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 			//DATA[i + DataSize * j] = (i % 32) / 8.0f + 430.0f;
 			//DATA[i + DataSize * j] = (j % 512 == 113 || i % 512 == 113) ? (20.0f) : (0.0f);
 			//DATA[i + DataSize * j] = 0.0f;
-			DATA[i + DataSize * j] = 2.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
+			//DATA[i + DataSize * j] = 2.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
 			//DATA[i + DataSize * j] = j / 10.0f + i / 5.0f;
 			//DATA[i + DataSize * j] = sin(float(j) / 400.f) * 80.0f + 300.0f;
+			//DATA[i + DataSize * j] = 50.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
 
-			//float a = sin(float(i) / (1.0 * 704.0f)) * 20.0f;
-			//float b = sin(float(i) / (1.0 * 352.0f)) * 20.0f;
-			//float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
-			//float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
-			//float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
+			float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
+			float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
+			float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
+			float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
+			float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
 			//float f = (rand() % 100) / 1500.0f;
-			//DATA[i + DataSize * j] = a + b + c + d + e + f;
+			float f = 0.0f;
+			DATA[i + DataSize * j] = (a + b + c + d + e + f) * 5.0f;
 		}
 
-		//if (DataSize > 10 && i % (DataSize / 10) == 0)
-		//	LOG("%d%% ", i / (DataSize / 10) * 10);
+		if (DataSize > 10 && i % (DataSize / 10) == 0)
+			LOG("Progress: " << i / (DataSize / 10) * 10 << "%");
 	}
 
 	LOG("Terrain Ready!\n");
-
-	StartIndexX = 10;
-	StartIndexY = 10;
 
 	VisibleClipmapStrips = new ClipmapStripPair[ClipmapsAmount];
 
@@ -110,56 +112,56 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 	else 
 		ERR("Failed to initialize GLEW!");
 
-    CurrentLandscape = new Landscape(2);
+    CurrentLandscape = new Landscape(7, 1.0f);
     LOG("Initial Landscape created");
 
 	LOG("Generating normals...");
-	NORMALS_0 = new float[DataSize * DataSize * 3];
-	NORMALS_1 = new float[DataSize * DataSize * 3];
-	NORMALS_2 = new float[DataSize * DataSize * 3];
+	//NORMALS_0 = new float[DataSize * DataSize * 3];
+	//NORMALS_1 = new float[DataSize * DataSize * 3];
+	//NORMALS_2 = new float[DataSize * DataSize * 3];
 
-	for (int i = 0; i < DataSize * DataSize * 3; ++i)
-		NORMALS_0[i] = NORMALS_1[i] = NORMALS_2[i] = 0.0f;
+	//for (int i = 0; i < DataSize * DataSize * 3; ++i)
+	//	NORMALS_0[i] = NORMALS_1[i] = NORMALS_2[i] = 0.0f;
 
-	for (int i = 1; i < DataSize - 1; ++i)
-		for (int j = 1; j < DataSize - 1; ++j)
-		{ 
-			vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 2.0f, DATA[i * DataSize + j - 1] - DATA[i * DataSize + j + 1]);
-			vec3 v2 = vec3(CurrentLandscape->GetOffset() * 2.0f, 0.0f, DATA[(i - 1) * DataSize + j] - DATA[(i + 1) * DataSize + j]);
+	//for (int i = 1; i < DataSize - 1; ++i)
+	//	for (int j = 1; j < DataSize - 1; ++j)
+	//	{ 
+	//		vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 2.0f, DATA[i * DataSize + j - 1] - DATA[i * DataSize + j + 1]);
+	//		vec3 v2 = vec3(CurrentLandscape->GetOffset() * 2.0f, 0.0f, DATA[(i - 1) * DataSize + j] - DATA[(i + 1) * DataSize + j]);
 
-			vec3 n = normalize(cross(v2, v1));
+	//		vec3 n = normalize(cross(v2, v1));
 
-			NORMALS_0[i * DataSize * 3 + j * 3] = n.x;
-			NORMALS_0[i * DataSize * 3 + j * 3 + 1] = n.y;
-			NORMALS_0[i * DataSize * 3 + j * 3 + 2] = n.z;
-		}
+	//		NORMALS_0[i * DataSize * 3 + j * 3] = n.x;
+	//		NORMALS_0[i * DataSize * 3 + j * 3 + 1] = n.y;
+	//		NORMALS_0[i * DataSize * 3 + j * 3 + 2] = n.z;
+	//	}
 
-	for (int i = 8; i < DataSize - 2; ++i)
-		for (int j = 8; j < DataSize - 2; ++j)
-		{ 
+	//for (int i = 8; i < DataSize - 2; ++i)
+	//	for (int j = 8; j < DataSize - 2; ++j)
+	//	{ 
 
-			vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 4.0f, DATA[i * DataSize + j - 2] - DATA[i * DataSize + j + 2]);
-			vec3 v2 = vec3(CurrentLandscape->GetOffset() * 4.0f, 0.0f, DATA[(i - 2) * DataSize + j] - DATA[(i + 2) * DataSize + j]);
+	//		vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 4.0f, DATA[i * DataSize + j - 2] - DATA[i * DataSize + j + 2]);
+	//		vec3 v2 = vec3(CurrentLandscape->GetOffset() * 4.0f, 0.0f, DATA[(i - 2) * DataSize + j] - DATA[(i + 2) * DataSize + j]);
 
-			vec3 n = normalize(cross(v2, v1));
+	//		vec3 n = normalize(cross(v2, v1));
 
-			NORMALS_1[i * DataSize * 3 + j * 3] = n.x;
-			NORMALS_1[i * DataSize * 3 + j * 3 + 1] = n.y;
-			NORMALS_1[i * DataSize * 3 + j * 3 + 2] = n.z;
-		}
+	//		NORMALS_1[i * DataSize * 3 + j * 3] = n.x;
+	//		NORMALS_1[i * DataSize * 3 + j * 3 + 1] = n.y;
+	//		NORMALS_1[i * DataSize * 3 + j * 3 + 2] = n.z;
+	//	}
 
-	for (int i = 16; i < DataSize - 16; ++i)
-		for (int j = 16; j < DataSize - 16; ++j)
-		{ 
-			vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 32.0f, DATA[i * DataSize + j - 16] - DATA[i * DataSize + j + 16]);
-			vec3 v2 = vec3(CurrentLandscape->GetOffset() * 32.0f, 0.0f, DATA[(i - 16) * DataSize + j] - DATA[(i + 16) * DataSize + j]);
+	//for (int i = 16; i < DataSize - 16; ++i)
+	//	for (int j = 16; j < DataSize - 16; ++j)
+	//	{ 
+	//		vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 32.0f, DATA[i * DataSize + j - 16] - DATA[i * DataSize + j + 16]);
+	//		vec3 v2 = vec3(CurrentLandscape->GetOffset() * 32.0f, 0.0f, DATA[(i - 16) * DataSize + j] - DATA[(i + 16) * DataSize + j]);
 
-			vec3 n = normalize(cross(v2, v1));
+	//		vec3 n = normalize(cross(v2, v1));
 
-			NORMALS_2[i * DataSize * 3 + j * 3] = n.x;
-			NORMALS_2[i * DataSize * 3 + j * 3 + 1] = n.y;
-			NORMALS_2[i * DataSize * 3 + j * 3 + 2] = n.z;
-		}
+	//		NORMALS_2[i * DataSize * 3 + j * 3] = n.x;
+	//		NORMALS_2[i * DataSize * 3 + j * 3 + 1] = n.y;
+	//		NORMALS_2[i * DataSize * 3 + j * 3 + 2] = n.z;
+	//	}
 
 	LOG("Normals Ready!");
 
@@ -218,6 +220,7 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
     // ----------------------------- Landscape Texture --------------------------------
     glActiveTexture(GL_TEXTURE0);
     if (TextureManager::Inst()->LoadTexture("Content/Textures/grass.tga", LandscapeTexture))
+	//if (TextureManager::Inst()->LoadTexture("Content/Textures/test_diffuse.tga", LandscapeTexture))
 	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -267,9 +270,6 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 
 	// ----------------------------- Texture Buffer Objects (TBOs) --------------------------------
 
-    //glGenBuffers(1, &TBO);
-	//InitTBO(TBO, true);
-
 	TBOs = new GLuint[ClipmapsAmount];
 	glGenBuffers(ClipmapsAmount, TBOs);
 
@@ -277,8 +277,8 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 
 	for (int i = 0; i < ClipmapsAmount; ++i)
 	{
-		ClipmapScale *= 2;
 		InitTBO(TBOs[i], false, ClipmapScale);
+		ClipmapScale *= 2;
 	}
 
     CheckGLError();
@@ -393,24 +393,13 @@ void LandGLContext::InitTBO(GLuint TBOID, const bool bClipmapCenter, int Clipmap
 	{
 		for (int y = 0; y < TBOSize; ++y)
 		{
-			int IndexX = int(mod(float(x + StartIndexX + 1 - TBOSize), float(DataSize)));
-			int IndexY = int(mod(float(y + StartIndexY + 1 - TBOSize), float(DataSize)));
+			int IndexX = int(mod(float(StartIndexX + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (x - TBOSize) * ClipmapScale), float(DataSize)));
+			int IndexY = int(mod(float(StartIndexY + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (y - TBOSize) * ClipmapScale), float(DataSize)));
 
 			Data[4 * (y * TBOSize + x)] = 0;
 			Data[4 * (y * TBOSize + x) + 1] = 0;
 			Data[4 * (y * TBOSize + x) + 2] = 0;
 			Data[4 * (y * TBOSize + x) + 3] = DATA[IndexY * DataSize + IndexX];
-
-			//Data[4 * (y * TBOSize + x) + 3] = x / 10.0f;
-			//Data[4 * (y * TBOSize + x) + 3] = 1.0f;
-			//Data[4 * (y * TBOSize + x) + 3] = pow(abs(TBOSize / 2.0f - y) / 3.0f, 2.0f);
-
-			//if (x == 0 || x == TBOSize - 1 || y == 0 || y == TBOSize - 1)
-			//	Data[4 * (y * TBOSize + x) + 3] = 1.5f;
-			//else
-			//	Data[4 * (y * TBOSize + x) + 3] = 1.0f;
-
-
 		}
 	}
 			
@@ -830,7 +819,7 @@ void LandGLContext::CreateNewLandscape(int Size)
     if (CurrentLandscape != 0)
         delete CurrentLandscape;
 
-    CurrentLandscape = new Landscape(Size);
+    CurrentLandscape = new Landscape(Size, 1.0f);
 
     ResetAllVBOIBO();
     ResetCamera();
@@ -939,12 +928,11 @@ void LandGLContext::OpenFromFile(const char* FilePath)
 			NORMALS_2[i * DataSize * 3 + j * 3 + 2] = n.z;
 		}
 
-	InitTBO(TBO, true);
 	int ClipmapScale = 1;
 	for (int i = 0; i < ClipmapsAmount; ++i)
 	{
-		ClipmapScale *= 2;
 		InitTBO(TBOs[i], false, ClipmapScale);
+		ClipmapScale *= 2;
 	}
 
 	ResetCamera();
@@ -974,7 +962,7 @@ void LandGLContext::ResetCamera()
 	OffsetX = 0.0001f;
 	OffsetY = 0.0001f;
 
-	CameraPosition = vec3(0.0f, 10.0f, 0.0f);
+	CameraPosition = vec3(0.0f, 39.0f, 0.0f);
 	CameraVerticalAngle = -1.62f;
     CameraHorizontalAngle = 0.0f;
 
@@ -1033,9 +1021,6 @@ void LandGLContext::ResetAllVBOIBO()
 // --------------------------------------------------------------------
 void LandGLContext::UpdateTBO()
 {
-	static float LastUpdateOffsetX = 1.0f;
-	static float LastUpdateOffsetY = 1.0f;
-
 	static float *ClipmapLastUpdateOffsetX = 0;
 	static float *ClipmapLastUpdateOffsetY = 0;
 
@@ -1046,9 +1031,6 @@ void LandGLContext::UpdateTBO()
 
 		ClipmapLastUpdateOffsetX = 0;
 		ClipmapLastUpdateOffsetY = 0;
-
-		LastUpdateOffsetX = 1.0f;
-		LastUpdateOffsetY = 1.0f;
 
 		bNewLandscape = false;
 	}
@@ -1062,80 +1044,90 @@ void LandGLContext::UpdateTBO()
 
 		for (int i = 0; i < ClipmapsAmount; ++i)
 		{
-			scale11 *= 2.0f;
 			ClipmapLastUpdateOffsetX[i] = scale11;
 			ClipmapLastUpdateOffsetY[i] = scale11;
+			scale11 *= 2.0f;
 		}
 	}
 
 	float *BufferData32 = NULL;
 	int TBOSize = CurrentLandscape->GetTBOSize();
+	int ClipmapScale = 1;
 
-	float fDiffX = OffsetX - LastUpdateOffsetX;
-	float fDiffY = OffsetY - LastUpdateOffsetY;
-
-	int DiffX = floor((abs(fDiffX) + 1.0f) / 2.0f) * sign(fDiffX) * 2.0f;
-	int DiffY = floor((abs(fDiffY) + 1.0f) / 2.0f) * sign(fDiffY) * 2.0f;
-
-	if (DiffX != 0 || DiffY != 0)
+	for (int lvl = 0; lvl < ClipmapsAmount; ++lvl)
 	{
-		glActiveTexture(GL_TEXTURE2);	
+		float fDiffX = OffsetX - ClipmapLastUpdateOffsetX[lvl];
+		float fDiffY = OffsetY - ClipmapLastUpdateOffsetY[lvl];
 
-		int SignX = sign(DiffX);
-		int SignY = sign(DiffY);
-
-		glBindBuffer(GL_TEXTURE_BUFFER, TBOs[0]);
-		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, TBOs[0]);
-		BufferData32 = (float*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
-
-		for (int j = 0; j < abs(DiffX); j++)
-		{
-			for (int i = max(0, DiffY); i < TBOSize + min(0, DiffY); i++)
-			{
-				int xTBO = int(mod(LastUpdateOffsetX - ((SignX > 0) ? (2.0f) : (1.0f)) + SignX * (j + 1), float(TBOSize)));
-				int yTBO = int(mod(LastUpdateOffsetY + i - 1.0f, float(TBOSize)));
-				int x = int(mod(StartIndexX + LastUpdateOffsetX - 1.0f + SignX * (j + 1) - ((SignX < 0) ? (TBOSize - 1.0f) : (0.0f)), float(DataSize)));
-				int y = int(mod(StartIndexY - (TBOSize - 1.0f) + LastUpdateOffsetY - 1.0f + i, float(DataSize)));
-
-				BufferData32[4 * (yTBO * TBOSize + xTBO) + 3] = DATA[y * DataSize + x];
-			}
-		}
+		int SignX = sign(fDiffX);
+		int SignY = sign(fDiffY);
 		
-		for (int j = 0; j < abs(DiffY); j++)
+		int	DiffX = floor((abs(fDiffX) + ClipmapScale) / (2.0f * ClipmapScale)) * SignX * 2.0f;
+		int	DiffY = floor((abs(fDiffY) + ClipmapScale) / (2.0f * ClipmapScale)) * SignY * 2.0f;
+
+		// Update VisibleClipmapStrip value
+		if (mod(OffsetX, 2.0f * ClipmapScale) < ClipmapScale)
 		{
-			for (int i = 0; i < TBOSize; i++)
-			{
-				int xTBO = int(mod(LastUpdateOffsetX + i - 1.0f + DiffX, float(TBOSize)));
-				int yTBO = int(mod(LastUpdateOffsetY - ((SignY > 0) ? (2.0f) : (1.0f)) + SignY * (j + 1), float(TBOSize)));
-				int x = int(mod(StartIndexX - (TBOSize - 1.0f) + LastUpdateOffsetX - 1.0f + i + DiffX, float(DataSize)));
-				int y = int(mod(StartIndexY + LastUpdateOffsetY - 1.0f + SignY * (j + 1) - ((SignY < 0) ? (TBOSize - 1.0f) : (0.0f)), float(DataSize)));
-				
-				BufferData32[4 * (yTBO * TBOSize + xTBO) + 3] = DATA[y * DataSize + x];
-			}
+			if (mod(OffsetY, 2.0f * ClipmapScale) < ClipmapScale)
+				VisibleClipmapStrips[lvl] = CLIPMAP_STRIP_1;
+			else
+				VisibleClipmapStrips[lvl] = CLIPMAP_STRIP_2;
+		}
+		else
+		{
+			if (mod(OffsetY, 2.0f * ClipmapScale) < ClipmapScale)
+				VisibleClipmapStrips[lvl] = CLIPMAP_STRIP_3;
+			else
+				VisibleClipmapStrips[lvl] = CLIPMAP_STRIP_4;
 		}
 
-		glUnmapBuffer(GL_TEXTURE_BUFFER);
+		if (DiffX != 0 || DiffY != 0)
+		{
+			glActiveTexture(GL_TEXTURE2);	
 
-		LastUpdateOffsetX += min(abs(DiffX), TBOSize) * SignX;
-		LastUpdateOffsetY += min(abs(DiffY), TBOSize) * SignY;
+			glBindBuffer(GL_TEXTURE_BUFFER, TBOs[lvl]);
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, TBOs[lvl]);
+			BufferData32 = (float*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
 
-		fDiffX = OffsetX - LastUpdateOffsetX;
-		fDiffY = OffsetY - LastUpdateOffsetY;
-	}
+			//int IndexX = int(mod(float(StartIndexX + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (x - TBOSize) * ClipmapScale), float(DataSize)));
+			//int IndexY = int(mod(float(StartIndexY + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (y - TBOSize) * ClipmapScale), float(DataSize)));
 
-	// Update VisibleCenterClipmapStrip value
-	if (fDiffX < 0.0f)
-	{
-		if (fDiffY < 0.0f)
-			VisibleClipmapStrips[0] = CLIPMAP_STRIP_1;
+			for (int j = 0; j < abs(DiffX); j++)
+			{
+				for (int i = max(0, DiffY); i < TBOSize + min(0, DiffY); i++)
+				{
+					int xTBO = int(mod(ClipmapLastUpdateOffsetX[lvl] / ClipmapScale - ((SignX > 0) ? (2.0f) : (1.0f)) + SignX * (j + 1), float(TBOSize)));
+					int yTBO = int(mod(ClipmapLastUpdateOffsetY[lvl] / ClipmapScale + i - 1.0f, float(TBOSize)));
+					int x = int(mod(StartIndexX + ((TBOSize + 3) / 2) * (ClipmapScale - 1) + ClipmapLastUpdateOffsetX[lvl] - ClipmapScale + SignX * (j * ClipmapScale + 1) - ((SignX < 0) ? ((TBOSize + 1) * ClipmapScale - 2.0f) : (0.0f)), float(DataSize)));
+					int y = int(mod(StartIndexY - ((TBOSize - 3) / 2) * (ClipmapScale - 1) - (TBOSize - 1.0f) + ClipmapLastUpdateOffsetY[lvl] - ClipmapScale + i * ClipmapScale, float(DataSize)));
+
+					BufferData32[4 * (yTBO * TBOSize + xTBO) + 3] = DATA[y * DataSize + x];
+				}
+			}
+		
+			for (int j = 0; j < abs(DiffY); j++)
+			{
+				for (int i = 0; i < TBOSize; i++)
+				{
+					int xTBO = int(mod(ClipmapLastUpdateOffsetX[lvl] / ClipmapScale + i - 1.0f + DiffX, float(TBOSize)));
+					int yTBO = int(mod(ClipmapLastUpdateOffsetY[lvl] / ClipmapScale - ((SignY > 0) ? (2.0f) : (1.0f)) + SignY * (j + 1), float(TBOSize)));
+					int x = int(mod(StartIndexX - ((TBOSize - 3) / 2) * (ClipmapScale - 1) - (TBOSize - 1.0f) + ClipmapLastUpdateOffsetX[lvl] - ClipmapScale + (i + DiffX) * ClipmapScale, float(DataSize)));
+					int y = int(mod(StartIndexY + ((TBOSize + 3) / 2) * (ClipmapScale - 1) + ClipmapLastUpdateOffsetY[lvl] - ClipmapScale + SignY * (j * ClipmapScale + 1) - ((SignY < 0) ? (TBOSize * ClipmapScale + (ClipmapScale - 2.0f)) : (0.0f)), float(DataSize)));
+
+					BufferData32[4 * (yTBO * TBOSize + xTBO) + 3] = DATA[y * DataSize + x];
+				}
+			}
+
+			glUnmapBuffer(GL_TEXTURE_BUFFER);
+
+			ClipmapLastUpdateOffsetX[lvl] += min(abs(DiffX), TBOSize) * SignX * ClipmapScale;
+			ClipmapLastUpdateOffsetY[lvl] += min(abs(DiffY), TBOSize) * SignY * ClipmapScale;
+		}
 		else
-			VisibleClipmapStrips[0] = CLIPMAP_STRIP_2;
-	}
-	else
-	{
-		if (fDiffY < 0.0f)
-			VisibleClipmapStrips[0] = CLIPMAP_STRIP_3;
-		else
-			VisibleClipmapStrips[0] = CLIPMAP_STRIP_4;
+		{
+			break;
+		}
+
+		ClipmapScale *= 2;
 	}
 }

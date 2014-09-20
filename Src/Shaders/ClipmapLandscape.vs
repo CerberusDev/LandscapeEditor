@@ -44,7 +44,7 @@ void main()
 	float VertexHeight = texelFetch(TBOSampler, TBOIndex).w;
 		
     gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight + ClipmapPartOffset.x * 0.0000001, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
-	UV = vec2(Position.x, Position.y);
+	UV = vec2(BaseY, BaseX);
 
 
 	TBOIndex = CalculateTBOIndex(Position.x + 1.0f, Position.y, iCameraOffsetX, iCameraOffsetY);
@@ -59,8 +59,8 @@ void main()
 	TBOIndex = CalculateTBOIndex(Position.x, Position.y - 1.0f, iCameraOffsetX, iCameraOffsetY);
 	float VH4 = texelFetch(TBOSampler, TBOIndex).w;
 
-	vec3 V1 = normalize(vec3(0.0, VH1 - VH2, 2.0 * LandscapeVertexOffset));
-	vec3 V2 = normalize(vec3(2.0 * LandscapeVertexOffset, VH3 - VH4, 0.0));
+	vec3 V1 = normalize(vec3(0.0, VH1 - VH2, 2.0 * LandscapeVertexOffset * ClipmapScale));
+	vec3 V2 = normalize(vec3(2.0 * LandscapeVertexOffset * ClipmapScale, VH3 - VH4, 0.0));
 
 	Normal = normalize(cross(V1, V2));
 }
