@@ -275,7 +275,7 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 
 	for (int i = 0; i < ClipmapsAmount; ++i)
 	{
-		InitTBO(TBOs[i], false, ClipmapScale);
+		InitTBO(TBOs[i], ClipmapScale);
 		ClipmapScale *= 2;
 	}
 
@@ -369,7 +369,7 @@ void LandGLContext::SetShadersInitialUniforms()
 }
 
 // --------------------------------------------------------------------
-void LandGLContext::InitTBO(GLuint TBOID, const bool bClipmapCenter, int ClipmapScale)
+void LandGLContext::InitTBO(GLuint TBOID, int ClipmapScale)
 {
 	int TBOSize = CurrentLandscape->GetTBOSize();
 
@@ -905,7 +905,7 @@ void LandGLContext::OpenFromFile(const char* FilePath)
 	int ClipmapScale = 1;
 	for (int i = 0; i < ClipmapsAmount; ++i)
 	{
-		InitTBO(TBOs[i], false, ClipmapScale);
+		InitTBO(TBOs[i], ClipmapScale);
 		ClipmapScale *= 2;
 	}
 
@@ -936,7 +936,7 @@ void LandGLContext::ResetCamera()
 	OffsetX = 0.0001f;
 	OffsetY = 0.0001f;
 
-	CameraPosition = vec3(0.0f, 700.0f, 0.0f);
+	CameraPosition = vec3(0.0f, 100.0f, 0.0f);
 	CameraVerticalAngle = -1.62f;
     CameraHorizontalAngle = 0.0f;
 
@@ -1093,8 +1093,6 @@ void LandGLContext::UpdateTBO()
 			
 			ClipmapLastUpdateOffsetX[lvl] += min(abs(DiffX), TBOSize) * SignX * ClipmapScale;
 			ClipmapLastUpdateOffsetY[lvl] += min(abs(DiffY), TBOSize) * SignY * ClipmapScale;
-
-			LOG(OffsetX << "    " << OffsetY);
 		}
 		else
 		{

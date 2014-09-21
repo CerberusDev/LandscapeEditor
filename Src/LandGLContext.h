@@ -151,7 +151,7 @@ protected:
 	/// Set vertical synchronization status
 	void SetVSync(bool sync);
 
-	void InitTBO(GLuint TBOID, const bool bClipmapCenter, int ClipmapScale = 1);
+	void InitTBO(GLuint TBOID, int ClipmapScale = 1);
 	void SetShadersInitialUniforms();
 	void RenderLandscapeModule(const ClipmapVBOMode VBOMode, const ClipmapIBOMode IBOMode, GLuint TBOID);
 	void ResetVBO(GLuint &BufferID, float *NewData, int DataSize);
