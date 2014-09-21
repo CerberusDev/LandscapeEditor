@@ -48,7 +48,7 @@ protected:
 
 public:
     /// Standard constructors and destructor
-    Landscape(int ClipmapRimWidth);
+    Landscape(int ClipmapRimWidth, float VerticesInterval);
     Landscape(const char* FilePath);
     ~Landscape();
 

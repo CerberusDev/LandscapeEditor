@@ -7,8 +7,8 @@
 #include "LandscapeEditor.h"
 
 // --------------------------------------------------------------------
-Landscape::Landscape(int ClipmapRimWidth):
-RestartIndex(0xFFFFFFFF), Offset(1.0f), TBOSize(ClipmapRimWidth), VBOSize(0), IBOSize(0)
+Landscape::Landscape(int ClipmapRimWidth, float VerticesInterval):
+RestartIndex(0xFFFFFFFF), Offset(VerticesInterval), VBOSize(0), IBOSize(0)
 {
 	ClipmapVBOsData = new float*[VBO_MODES_AMOUNT];
 	ClipmapIBOsData = new unsigned int*[IBO_MODES_AMOUNT];
@@ -18,7 +18,8 @@ RestartIndex(0xFFFFFFFF), Offset(1.0f), TBOSize(ClipmapRimWidth), VBOSize(0), IB
 	IBOSize = new unsigned int[IBO_MODES_AMOUNT];
 
 	ClipmapVBOsWidth[VBO_CLIPMAP] = ClipmapRimWidth * 4 + 2;
-	ClipmapVBOsWidth[VBO_STRIPS] = (ClipmapRimWidth + 1) * 4;
+	ClipmapVBOsWidth[VBO_STRIPS] = ClipmapRimWidth * 4 + 4;
+	TBOSize = ClipmapRimWidth * 4 + 5;
 
 	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
 		CreateVBO((ClipmapVBOMode)i);
@@ -88,8 +89,8 @@ void Landscape::CreateVBO(ClipmapVBOMode Mode)
 		{
 			for (int x = 0; x < Width; x++)
 			{
-				ClipmapVBOsData[Mode][CurrentIndex++] = Offset * (x - float(Width - 1) / 2.0f + 0.5f);
-				ClipmapVBOsData[Mode][CurrentIndex++] = Offset * (y - float(Width - 1) / 2.0f + 0.5f);
+				ClipmapVBOsData[Mode][CurrentIndex++] = (x - float(Width - 1) / 2.0f + 0.5f);
+				ClipmapVBOsData[Mode][CurrentIndex++] = (y - float(Width - 1) / 2.0f + 0.5f);
 			}
 		}
 
@@ -108,8 +109,8 @@ void Landscape::CreateVBO(ClipmapVBOMode Mode)
 			{
 				if (x < RimVerticesX || x >= RimVerticesX + MissingVerticesX || y < RimVerticesX || y >= RimVerticesX + MissingVerticesX)
 				{
-					ClipmapVBOsData[Mode][CurrentIndex++] = Offset * (x - float(Width - 1) / 2.0f + 0.5f) + 0.0f;
-					ClipmapVBOsData[Mode][CurrentIndex++] = Offset * (y - float(Width - 1) / 2.0f + 0.5f);
+					ClipmapVBOsData[Mode][CurrentIndex++] = (x - float(Width - 1) / 2.0f + 0.5f) + 0.0f;
+					ClipmapVBOsData[Mode][CurrentIndex++] = (y - float(Width - 1) / 2.0f + 0.5f);
 				}
 			}
 		}

@@ -20,19 +20,24 @@ float AmbientLightningStrength;
 float TotalLightFactor;
 vec3 LightDirection;
 
+
+float ShitVariable;
+
 void main()
 {
-	LightDirection = normalize(vec3(0.5, 0.5, 1.0));
+	LightDirection = normalize(vec3(0.0, 1.0, 0.0));
 	AmbientLightningStrength = 0.2;
 
 	BrushTextureData = texture2D(BrushTextureSampler, (UV - BrushPosition) / BrushScale).bgra;
 
-	//BlendedColor = vec4(WireframeColor + BrushTextureData.a * BrushColor * 0.00001, 1.0);
-
 	BlendedColor = texture2D(TextureSampler, UV).bgra + vec4((WireframeColor + BrushTextureData.a - BrushColor) * 0.000001, 1.0);
 
-	DiffuseFactor = clamp(dot(normalize(Normal), LightDirection), 0.0, 1.0);
+	DiffuseFactor = clamp(pow(dot(normalize(Normal), LightDirection),4.0), 0.0, 1.0);
 	TotalLightFactor = AmbientLightningStrength + (1.0 - AmbientLightningStrength) * DiffuseFactor;
 
 	FragColor = BlendedColor * TotalLightFactor;
+	
+
+	//ShitVariable = 0.00000001 * ((texture2D(BrushTextureSampler, (UV - BrushPosition) / (BrushScale + BrushColor.r + WireframeColor.r)).bgra) + texture2D(TextureSampler, UV).bgra);
+	//FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f) * TotalLightFactor + vec4(1.0f) * ShitVariable;
 }
