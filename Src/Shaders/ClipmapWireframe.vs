@@ -8,10 +8,21 @@ uniform int ClipmapWidth;
 uniform float LandscapeVertexOffset;
 uniform mat4 gWorld;
 uniform samplerBuffer TBOSampler;
-uniform float TestOffsetX;
-uniform float TestOffsetY;
+uniform float CameraOffsetX;
+uniform float CameraOffsetY;
 uniform float ClipmapScale;
 
+
+int imod(in int x, in int y)
+{
+	if (x < 0)
+	{
+		int d = abs(x) / ClipmapWidth;
+		x += (d+1) * ClipmapWidth;
+	}
+
+	return x % y;	
+}
 
 int CalculateTBOIndex(const in int PosX, const in int PosY, const in int CameraOffsetX, const in int CameraOffsetY)
 {
@@ -21,22 +32,22 @@ int CalculateTBOIndex(const in int PosX, const in int PosY, const in int CameraO
 	int ModifiedX = ConvertedX + CameraOffsetX;
 	int ModifiedY = ConvertedY + CameraOffsetY;
 
-	int ClippedY = ModifiedY % ClipmapWidth;
-	int ClippedX = ModifiedX % ClipmapWidth;
+	int ClippedY = imod(int(ModifiedY), ClipmapWidth);
+	int ClippedX = imod(int(ModifiedX), ClipmapWidth);
 
 	return int(ClippedY * ClipmapWidth + ClippedX);
 }
 
 void main()
 {
-	float VertexOffsetX = mod(TestOffsetX, ClipmapScale);
-	float VertexOffsetY = mod(TestOffsetY, ClipmapScale);
+	float VertexOffsetX = mod(CameraOffsetX, ClipmapScale);
+	float VertexOffsetY = mod(CameraOffsetY, ClipmapScale);
 
 	float BaseX = Position.x * ClipmapScale;
 	float BaseY = Position.y * ClipmapScale;
 
-	int iCameraOffsetX = int(floor(TestOffsetX / ClipmapScale));
-	int iCameraOffsetY = int(floor(TestOffsetY / ClipmapScale));
+	int iCameraOffsetX = int(floor(CameraOffsetX / ClipmapScale));
+	int iCameraOffsetY = int(floor(CameraOffsetY / ClipmapScale));
 
 	int PosX = int(Position.x);
 	int PosY = int(Position.y);

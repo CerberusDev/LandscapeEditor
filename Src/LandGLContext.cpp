@@ -47,8 +47,8 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 {
 	programStartMoment = timeGetTime() / 1000.0f;
 
-	DataSize = 424;
-	StartIndexX = StartIndexY = 210;
+	DataSize = 4240;
+	StartIndexX = StartIndexY = 2100;
 
 	DATA = new float[DataSize * DataSize];
 
@@ -58,21 +58,21 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 	{
 		for (int j = 0; j < DataSize; ++j)
 		{
-			//DATA[i + DataSize * j] = i / 10.0f;
+			//DATA[i + DataSize * j] = 650.0f + i / 10.0f;
 			//DATA[i + DataSize * j] = (i % 32) / 8.0f + 430.0f;
 			//DATA[i + DataSize * j] = (j % 512 == 113 || i % 512 == 113) ? (20.0f) : (0.0f);
-			DATA[i + DataSize * j] = 650.0f;
-			//DATA[i + DataSize * j] = 2.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
-			//DATA[i + DataSize * j] = j / 11.0f + i / 4.36f;
+			//DATA[i + DataSize * j] = 650.0f;
+			//DATA[i + DataSize * j] = 600.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
+			//DATA[i + DataSize * j] = 600.0f + j / 11.0f + i / 4.36f;
 			//DATA[i + DataSize * j] = sin(float(j) / 400.f) * 80.0f + 300.0f;
-			//DATA[i + DataSize * j] = 50.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
+			//DATA[i + DataSize * j] = 670.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
 
-			//float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
-			//float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
-			//float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
-			//float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
-			//float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
-			//DATA[i + DataSize * j] = (a + b + c + d + e) * 5.0f;
+			float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
+			float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
+			float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
+			float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
+			float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
+			DATA[i + DataSize * j] = (a + b + c + d + e) * 5.0f;
 		}
 
 		if (DataSize > 10 && i % (DataSize / 10) == 0)
@@ -331,8 +331,8 @@ void LandGLContext::SetShadersInitialUniforms()
     ClipmapWireframeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     ClipmapWireframeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
 	ClipmapWireframeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
-	ClipmapWireframeShad.SetTestOffsetX(0.0f);
-	ClipmapWireframeShad.SetTestOffsetY(0.0f);
+	ClipmapWireframeShad.SetCameraOffsetX(0.0f);
+	ClipmapWireframeShad.SetCameraOffsetY(0.0f);
 	ClipmapWireframeShad.SetgWorld(mat4(0.0f));
 	ClipmapWireframeShad.SetClipmapScale(1.0f);
 	ClipmapWireframeShad.SetClipmapWidth(CurrentLandscape->GetTBOSize());
@@ -360,12 +360,11 @@ void LandGLContext::SetShadersInitialUniforms()
     ClipmapLandscapeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     ClipmapLandscapeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
 	ClipmapLandscapeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
-	ClipmapLandscapeShad.SetTestOffsetX(0.0f);
-	ClipmapLandscapeShad.SetTestOffsetY(0.0f);
+	ClipmapLandscapeShad.SetCameraOffsetX(0.0f);
+	ClipmapLandscapeShad.SetCameraOffsetY(0.0f);
 	ClipmapLandscapeShad.SetgWorld(mat4(0.0f));
 	ClipmapLandscapeShad.SetClipmapScale(1.0f);
 	ClipmapLandscapeShad.SetClipmapWidth(CurrentLandscape->GetTBOSize());
-	ClipmapLandscapeShad.SetClipmapPartOffset(vec2(0.0f, 0.0f));
 	ClipmapLandscapeShad.SetTextureSampler(0);
 }
 
@@ -557,8 +556,8 @@ void LandGLContext::OnKey(bool bKeyIsDown, wxKeyEvent& event)
 			{
 				OffsetY += 2.0f;
 				OffsetX += 2.0f;
-				ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-				ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+				ClipmapWireframeShad.SetCameraOffsetX(OffsetX);
+				ClipmapWireframeShad.SetCameraOffsetY(OffsetY);
 				UpdateTBO();
 			}
             break;
@@ -570,8 +569,8 @@ void LandGLContext::OnKey(bool bKeyIsDown, wxKeyEvent& event)
 			{
 				OffsetY += 2.0f;
 				OffsetX -= 2.0f;
-				ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-				ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+				ClipmapWireframeShad.SetCameraOffsetX(OffsetX);
+				ClipmapWireframeShad.SetCameraOffsetY(OffsetY);
 				UpdateTBO();
 			}
             break;
@@ -583,8 +582,8 @@ void LandGLContext::OnKey(bool bKeyIsDown, wxKeyEvent& event)
 			{
 				OffsetY -= 2.0f;
 				OffsetX += 2.0f;
-				ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-				ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+				ClipmapWireframeShad.SetCameraOffsetX(OffsetX);
+				ClipmapWireframeShad.SetCameraOffsetY(OffsetY);
 				UpdateTBO();
 			}
             break;
@@ -596,8 +595,8 @@ void LandGLContext::OnKey(bool bKeyIsDown, wxKeyEvent& event)
 			{
 				OffsetY -= 2.0f;
 				OffsetX -= 2.0f;
-				ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-				ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+				ClipmapWireframeShad.SetCameraOffsetX(OffsetX);
+				ClipmapWireframeShad.SetCameraOffsetY(OffsetY);
 				UpdateTBO();
 			}
             break;
@@ -626,8 +625,8 @@ void LandGLContext::OnKey(bool bKeyIsDown, wxKeyEvent& event)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 CurrentDisplayMode = LANDSCAPE;
 				ClipmapLandscapeShad.Use();
-				ClipmapLandscapeShad.SetTestOffsetX(OffsetX);
-				ClipmapLandscapeShad.SetTestOffsetY(OffsetY);
+				ClipmapLandscapeShad.SetCameraOffsetX(OffsetX);
+				ClipmapLandscapeShad.SetCameraOffsetY(OffsetY);
             }
             break;
         case WXK_F2:
@@ -635,8 +634,8 @@ void LandGLContext::OnKey(bool bKeyIsDown, wxKeyEvent& event)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                 CurrentDisplayMode = WIREFRAME;
 				ClipmapWireframeShad.Use();
-				ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-				ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+				ClipmapWireframeShad.SetCameraOffsetX(OffsetX);
+				ClipmapWireframeShad.SetCameraOffsetY(OffsetY);
             }
             break;
         case WXK_SPACE:
@@ -771,8 +770,17 @@ void LandGLContext::ManageInput()
 			CameraPosition.y -= (Right * (CameraSpeed * ((Keys[8]) ? (MovementModifier) : (1.0f)))).y;
 		}
 
-		ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-		ClipmapWireframeShad.SetTestOffsetY(OffsetY);
+		switch (CurrentDisplayMode)
+		{
+		case LANDSCAPE:
+			ClipmapLandscapeShad.SetCameraOffsetX(OffsetX);
+			ClipmapLandscapeShad.SetCameraOffsetY(OffsetY);
+			break;
+		case WIREFRAME:
+			ClipmapWireframeShad.SetCameraOffsetX(OffsetX);
+			ClipmapWireframeShad.SetCameraOffsetY(OffsetY);
+			break;
+		}
 		UpdateTBO();
 
 		View = lookAt(CameraPosition, CameraPosition + Direction, Up);
@@ -1116,6 +1124,8 @@ void LandGLContext::UpdateTBO()
 			
 			ClipmapLastUpdateOffsetX[lvl] += min(abs(DiffX), TBOSize) * SignX * ClipmapScale;
 			ClipmapLastUpdateOffsetY[lvl] += min(abs(DiffY), TBOSize) * SignY * ClipmapScale;
+
+			LOG(OffsetX << "    " << OffsetY);
 		}
 		else
 		{

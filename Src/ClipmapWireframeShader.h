@@ -26,8 +26,8 @@ public:
 	void SetLandscapeVertexOffset(float Value) {SetUniform("LandscapeVertexOffset", Value);};
 	void SetWireframeColor(vec3 Value) {SetUniform("WireframeColor", Value);};
 	void SetBrushColor(vec3 Value) {SetUniform("BrushColor", Value);};
-	void SetTestOffsetX(float Value) {SetUniform("TestOffsetX", Value);};
-	void SetTestOffsetY(float Value) {SetUniform("TestOffsetY", Value);};
+	void SetCameraOffsetX(float Value) {SetUniform("CameraOffsetX", Value);};
+	void SetCameraOffsetY(float Value) {SetUniform("CameraOffsetY", Value);};
 	void SetClipmapScale(float Value) {SetUniform("ClipmapScale", Value);};
 
     /// Standard constructor
@@ -42,8 +42,8 @@ public:
 		Uniforms.insert(std::make_pair<std::string, GLuint>("LandscapeVertexOffset", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("WireframeColor", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("BrushColor", 0));
-		Uniforms.insert(std::make_pair<std::string, GLuint>("TestOffsetX", 0));
-		Uniforms.insert(std::make_pair<std::string, GLuint>("TestOffsetY", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("CameraOffsetX", 0));
+		Uniforms.insert(std::make_pair<std::string, GLuint>("CameraOffsetY", 0));
 		Uniforms.insert(std::make_pair<std::string, GLuint>("ClipmapScale", 0));
 	}
 };
