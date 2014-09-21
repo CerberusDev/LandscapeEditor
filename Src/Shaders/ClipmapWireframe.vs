@@ -4,26 +4,25 @@ layout (location = 0) in vec2 Position;
 
 out vec2 UV;
 
-uniform float ClipmapWidth;
+uniform int ClipmapWidth;
 uniform float LandscapeVertexOffset;
 uniform mat4 gWorld;
 uniform samplerBuffer TBOSampler;
 uniform float TestOffsetX;
 uniform float TestOffsetY;
 uniform float ClipmapScale;
-uniform vec2 ClipmapPartOffset;
 
 
-int CalculateTBOIndex(const in float PosX, const in float PosY, const in int CameraOffsetX, const in int CameraOffsetY)
+int CalculateTBOIndex(const in int PosX, const in int PosY, const in int CameraOffsetX, const in int CameraOffsetY)
 {
-	float ConvertedX = PosX + (ClipmapWidth - 3) / 2.0;				
-	float ConvertedY = PosY + (ClipmapWidth - 3) / 2.0;
+	int ConvertedX = PosX + (ClipmapWidth - 3) / 2;				
+	int ConvertedY = PosY + (ClipmapWidth - 3) / 2;
 
-	float ModifiedX = ConvertedX + CameraOffsetX;
-	float ModifiedY = ConvertedY + CameraOffsetY;
+	int ModifiedX = ConvertedX + CameraOffsetX;
+	int ModifiedY = ConvertedY + CameraOffsetY;
 
-	float ClippedY = mod(ModifiedY, ClipmapWidth);
-	float ClippedX = mod(ModifiedX, ClipmapWidth);
+	int ClippedY = ModifiedY % ClipmapWidth;
+	int ClippedX = ModifiedX % ClipmapWidth;
 
 	return int(ClippedY * ClipmapWidth + ClippedX);
 }
@@ -39,9 +38,12 @@ void main()
 	int iCameraOffsetX = int(floor(TestOffsetX / ClipmapScale));
 	int iCameraOffsetY = int(floor(TestOffsetY / ClipmapScale));
 
-	int TBOIndex = CalculateTBOIndex(Position.x, Position.y, iCameraOffsetX, iCameraOffsetY);
+	int PosX = int(Position.x);
+	int PosY = int(Position.y);
+
+	int TBOIndex = CalculateTBOIndex(PosX, PosY, iCameraOffsetX, iCameraOffsetY);
 	float VertexHeight = texelFetch(TBOSampler, TBOIndex).w;
 		
-    gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight + ClipmapPartOffset.x * 0.0000001, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
+    gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
 	UV = vec2(Position.x, Position.y);
 }
