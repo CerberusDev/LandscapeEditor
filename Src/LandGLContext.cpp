@@ -42,8 +42,8 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(10), VBOs(0), IBOs(0), TBOs(0), TBO(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
-VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(0), NORMALS_2(0), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(10), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
+VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
 
@@ -112,56 +112,6 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), NORMALS_0(0), NORMALS_1(
 
     CurrentLandscape = new Landscape(7, 1.0f);
     LOG("Initial Landscape created");
-
-	LOG("Generating normals...");
-	//NORMALS_0 = new float[DataSize * DataSize * 3];
-	//NORMALS_1 = new float[DataSize * DataSize * 3];
-	//NORMALS_2 = new float[DataSize * DataSize * 3];
-
-	//for (int i = 0; i < DataSize * DataSize * 3; ++i)
-	//	NORMALS_0[i] = NORMALS_1[i] = NORMALS_2[i] = 0.0f;
-
-	//for (int i = 1; i < DataSize - 1; ++i)
-	//	for (int j = 1; j < DataSize - 1; ++j)
-	//	{ 
-	//		vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 2.0f, DATA[i * DataSize + j - 1] - DATA[i * DataSize + j + 1]);
-	//		vec3 v2 = vec3(CurrentLandscape->GetOffset() * 2.0f, 0.0f, DATA[(i - 1) * DataSize + j] - DATA[(i + 1) * DataSize + j]);
-
-	//		vec3 n = normalize(cross(v2, v1));
-
-	//		NORMALS_0[i * DataSize * 3 + j * 3] = n.x;
-	//		NORMALS_0[i * DataSize * 3 + j * 3 + 1] = n.y;
-	//		NORMALS_0[i * DataSize * 3 + j * 3 + 2] = n.z;
-	//	}
-
-	//for (int i = 8; i < DataSize - 2; ++i)
-	//	for (int j = 8; j < DataSize - 2; ++j)
-	//	{ 
-
-	//		vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 4.0f, DATA[i * DataSize + j - 2] - DATA[i * DataSize + j + 2]);
-	//		vec3 v2 = vec3(CurrentLandscape->GetOffset() * 4.0f, 0.0f, DATA[(i - 2) * DataSize + j] - DATA[(i + 2) * DataSize + j]);
-
-	//		vec3 n = normalize(cross(v2, v1));
-
-	//		NORMALS_1[i * DataSize * 3 + j * 3] = n.x;
-	//		NORMALS_1[i * DataSize * 3 + j * 3 + 1] = n.y;
-	//		NORMALS_1[i * DataSize * 3 + j * 3 + 2] = n.z;
-	//	}
-
-	//for (int i = 16; i < DataSize - 16; ++i)
-	//	for (int j = 16; j < DataSize - 16; ++j)
-	//	{ 
-	//		vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 32.0f, DATA[i * DataSize + j - 16] - DATA[i * DataSize + j + 16]);
-	//		vec3 v2 = vec3(CurrentLandscape->GetOffset() * 32.0f, 0.0f, DATA[(i - 16) * DataSize + j] - DATA[(i + 16) * DataSize + j]);
-
-	//		vec3 n = normalize(cross(v2, v1));
-
-	//		NORMALS_2[i * DataSize * 3 + j * 3] = n.x;
-	//		NORMALS_2[i * DataSize * 3 + j * 3 + 1] = n.y;
-	//		NORMALS_2[i * DataSize * 3 + j * 3 + 2] = n.z;
-	//	}
-
-	LOG("Normals Ready!");
 
 	StartIndexX += CurrentLandscape->GetTBOSize() / 2;
 	StartIndexY += CurrentLandscape->GetTBOSize() / 2;
@@ -292,7 +242,6 @@ LandGLContext::~LandGLContext(void)
 {
 	glDeleteBuffers(VBO_MODES_AMOUNT, VBOs);
 	glDeleteBuffers(IBO_MODES_AMOUNT, IBOs);
-	glDeleteBuffers(1, &TBO);
 	glDeleteBuffers(ClipmapsAmount, TBOs);
 
 	glDeleteTextures(1, &LandscapeTexture);
@@ -300,7 +249,6 @@ LandGLContext::~LandGLContext(void)
     glDeleteTextures(1, &BrushTexture);
 
 	delete[] DATA;
-	delete[] NORMALS_0;
 	delete[] VBOs;
 	delete[] IBOs;
 	delete[] IBOLengths;
@@ -374,16 +322,7 @@ void LandGLContext::InitTBO(GLuint TBOID, int ClipmapScale)
 	int TBOSize = CurrentLandscape->GetTBOSize();
 
 	glActiveTexture(GL_TEXTURE2);
-	float *Data = new float[TBOSize * TBOSize* 4];
-
-	float *NORMALS = 0;
-
-	if (ClipmapScale > 128)
-		NORMALS = NORMALS_2;
-	else if (ClipmapScale > 32)
-		NORMALS = NORMALS_1;
-	else
-		NORMALS = NORMALS_0;
+	float *Data = new float[TBOSize * TBOSize];
 
 	for (int x = 0; x < TBOSize; ++x)
 	{
@@ -392,16 +331,13 @@ void LandGLContext::InitTBO(GLuint TBOID, int ClipmapScale)
 			int IndexX = int(mod(float(StartIndexX + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (x - TBOSize) * ClipmapScale), float(DataSize)));
 			int IndexY = int(mod(float(StartIndexY + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (y - TBOSize) * ClipmapScale), float(DataSize)));
 
-			Data[4 * (y * TBOSize + x)] = 0;
-			Data[4 * (y * TBOSize + x) + 1] = 0;
-			Data[4 * (y * TBOSize + x) + 2] = 0;
-			Data[4 * (y * TBOSize + x) + 3] = DATA[IndexY * DataSize + IndexX];
+			Data[y * TBOSize + x] = DATA[IndexY * DataSize + IndexX];
 		}
 	}
 			
 	glBindBuffer(GL_TEXTURE_BUFFER, TBOID);
-	glBufferData(GL_TEXTURE_BUFFER, 4 * TBOSize * TBOSize * sizeof(float), Data, GL_STATIC_DRAW);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, TBOID);
+	glBufferData(GL_TEXTURE_BUFFER, TBOSize * TBOSize * sizeof(float), Data, GL_STATIC_DRAW);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, TBOID);
 
 	delete[] Data;
 }
@@ -510,7 +446,7 @@ void LandGLContext::DrawScene()
 void LandGLContext::RenderLandscapeModule(const ClipmapVBOMode VBOMode, const ClipmapIBOMode IBOMode, GLuint TBOID)
 {
 	glBindBuffer(GL_TEXTURE_BUFFER, TBOID);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, TBOID);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, TBOID);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOMode]);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
@@ -842,9 +778,6 @@ void LandGLContext::OpenFromFile(const char* FilePath)
 	LOG("Opening...");
 
 	delete[] DATA;
-	delete[] NORMALS_0;
-	delete[] NORMALS_1;
-	delete[] NORMALS_2;
 
 	DATA = new float[DataSize * DataSize];
 	unsigned int DataByteSize;
@@ -852,55 +785,6 @@ void LandGLContext::OpenFromFile(const char* FilePath)
 	DATA = (float*)LandscapeEditor::FileRead(FilePath, DataByteSize);
 	DataSize = sqrt((float)DataByteSize / 4.0);
 	StartIndexY = StartIndexX = DataSize / 2.0f;
-
-	NORMALS_0 = new float[DataSize * DataSize * 3];
-	NORMALS_1 = new float[DataSize * DataSize * 3];
-	NORMALS_2 = new float[DataSize * DataSize * 3];
-
-	for (int i = 0; i < DataSize * DataSize * 3; ++i)
-		NORMALS_0[i] = NORMALS_1[i] = NORMALS_2[i] = 0.0f;
-
-	LOG("Generating normals...");
-
-	for (int i = 1; i < DataSize - 1; ++i)
-		for (int j = 1; j < DataSize - 1; ++j)
-		{ 
-			vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 2.0f, DATA[i * DataSize + j - 1] - DATA[i * DataSize + j + 1]);
-			vec3 v2 = vec3(CurrentLandscape->GetOffset() * 2.0f, 0.0f, DATA[(i - 1) * DataSize + j] - DATA[(i + 1) * DataSize + j]);
-
-			vec3 n = normalize(cross(v2, v1));
-
-			NORMALS_0[i * DataSize * 3 + j * 3] = n.x;
-			NORMALS_0[i * DataSize * 3 + j * 3 + 1] = n.y;
-			NORMALS_0[i * DataSize * 3 + j * 3 + 2] = n.z;
-		}
-
-	for (int i = 8; i < DataSize - 2; ++i)
-		for (int j = 8; j < DataSize - 2; ++j)
-		{ 
-
-			vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 4.0f, DATA[i * DataSize + j - 2] - DATA[i * DataSize + j + 2]);
-			vec3 v2 = vec3(CurrentLandscape->GetOffset() * 4.0f, 0.0f, DATA[(i - 2) * DataSize + j] - DATA[(i + 2) * DataSize + j]);
-
-			vec3 n = normalize(cross(v2, v1));
-
-			NORMALS_1[i * DataSize * 3 + j * 3] = n.x;
-			NORMALS_1[i * DataSize * 3 + j * 3 + 1] = n.y;
-			NORMALS_1[i * DataSize * 3 + j * 3 + 2] = n.z;
-		}
-
-	for (int i = 16; i < DataSize - 16; ++i)
-		for (int j = 16; j < DataSize - 16; ++j)
-		{ 
-			vec3 v1 = vec3(0.0f, CurrentLandscape->GetOffset() * 32.0f, DATA[i * DataSize + j - 16] - DATA[i * DataSize + j + 16]);
-			vec3 v2 = vec3(CurrentLandscape->GetOffset() * 32.0f, 0.0f, DATA[(i - 16) * DataSize + j] - DATA[(i + 16) * DataSize + j]);
-
-			vec3 n = normalize(cross(v2, v1));
-
-			NORMALS_2[i * DataSize * 3 + j * 3] = n.x;
-			NORMALS_2[i * DataSize * 3 + j * 3 + 1] = n.y;
-			NORMALS_2[i * DataSize * 3 + j * 3 + 2] = n.z;
-		}
 
 	int ClipmapScale = 1;
 	for (int i = 0; i < ClipmapsAmount; ++i)
@@ -1060,7 +944,7 @@ void LandGLContext::UpdateTBO()
 			glActiveTexture(GL_TEXTURE2);	
 
 			glBindBuffer(GL_TEXTURE_BUFFER, TBOs[lvl]);
-			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, TBOs[lvl]);
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, TBOs[lvl]);
 			BufferData32 = (float*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
 
 			for (int j = 0; j < abs(DiffX); j++)
@@ -1072,7 +956,7 @@ void LandGLContext::UpdateTBO()
 					int x = int(mod(StartIndexX + ((TBOSize + 3) / 2) * (ClipmapScale - 1) + ClipmapLastUpdateOffsetX[lvl] - ClipmapScale + SignX * (j * ClipmapScale + 1) - ((SignX < 0) ? ((TBOSize + 1) * ClipmapScale - 2.0f) : (0.0f)), float(DataSize)));
 					int y = int(mod(StartIndexY - ((TBOSize - 3) / 2) * (ClipmapScale - 1) - (TBOSize - 1.0f) + ClipmapLastUpdateOffsetY[lvl] - ClipmapScale + i * ClipmapScale, float(DataSize)));
 
-					BufferData32[4 * (yTBO * TBOSize + xTBO) + 3] = DATA[y * DataSize + x];
+					BufferData32[yTBO * TBOSize + xTBO] = DATA[y * DataSize + x];
 				}
 			}
 		
@@ -1085,7 +969,7 @@ void LandGLContext::UpdateTBO()
 					int x = int(mod(StartIndexX - ((TBOSize - 3) / 2) * (ClipmapScale - 1) - (TBOSize - 1.0f) + ClipmapLastUpdateOffsetX[lvl] - ClipmapScale + (i + DiffX) * ClipmapScale, float(DataSize)));
 					int y = int(mod(StartIndexY + ((TBOSize + 3) / 2) * (ClipmapScale - 1) + ClipmapLastUpdateOffsetY[lvl] - ClipmapScale + SignY * (j * ClipmapScale + 1) - ((SignY < 0) ? (TBOSize * ClipmapScale + (ClipmapScale - 2.0f)) : (0.0f)), float(DataSize)));
 
-					BufferData32[4 * (yTBO * TBOSize + xTBO) + 3] = DATA[y * DataSize + x];
+					BufferData32[yTBO * TBOSize + xTBO] = DATA[y * DataSize + x];
 				}
 			}
 

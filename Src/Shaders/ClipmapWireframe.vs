@@ -53,7 +53,7 @@ void main()
 	int PosY = int(Position.y);
 
 	int TBOIndex = CalculateTBOIndex(PosX, PosY, iCameraOffsetX, iCameraOffsetY);
-	float VertexHeight = texelFetch(TBOSampler, TBOIndex).w;
+	float VertexHeight = texelFetch(TBOSampler, TBOIndex).r;
 		
     gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
 	UV = vec2(Position.x, Position.y);

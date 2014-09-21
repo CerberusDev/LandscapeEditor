@@ -54,23 +54,23 @@ void main()
 	int PosY = int(Position.y);
 
 	int TBOIndex = CalculateTBOIndex(PosX, PosY, iCameraOffsetX, iCameraOffsetY);
-	float VertexHeight = texelFetch(TBOSampler, TBOIndex).w;
+	float VertexHeight = texelFetch(TBOSampler, TBOIndex).r;
 		
     gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
 	UV = vec2(BaseY, BaseX);
 
 
 	TBOIndex = CalculateTBOIndex(PosX + 1, PosY, iCameraOffsetX, iCameraOffsetY);
-	float VH1 = texelFetch(TBOSampler, TBOIndex).w;
+	float VH1 = texelFetch(TBOSampler, TBOIndex).r;
 
 	TBOIndex = CalculateTBOIndex(PosX - 1, PosY, iCameraOffsetX, iCameraOffsetY);
-	float VH2 = texelFetch(TBOSampler, TBOIndex).w;
+	float VH2 = texelFetch(TBOSampler, TBOIndex).r;
 
 	TBOIndex = CalculateTBOIndex(PosX, PosY + 1, iCameraOffsetX, iCameraOffsetY);
-	float VH3 = texelFetch(TBOSampler, TBOIndex).w;
+	float VH3 = texelFetch(TBOSampler, TBOIndex).r;
 
 	TBOIndex = CalculateTBOIndex(PosX, PosY - 1, iCameraOffsetX, iCameraOffsetY);
-	float VH4 = texelFetch(TBOSampler, TBOIndex).w;
+	float VH4 = texelFetch(TBOSampler, TBOIndex).r;
 
 	vec3 V1 = normalize(vec3(0.0, VH1 - VH2, 2.0 * LandscapeVertexOffset * ClipmapScale));
 	vec3 V2 = normalize(vec3(2.0 * LandscapeVertexOffset * ClipmapScale, VH3 - VH4, 0.0));

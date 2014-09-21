@@ -46,7 +46,6 @@ protected:
     /// Buffer objects
 	GLuint *VBOs;
 	GLuint *IBOs;
-	GLuint TBO;
 	GLuint *TBOs;
 
     /// Textures
@@ -87,9 +86,6 @@ protected:
 	int StartIndexY;
 
 	float *DATA;
-	float *NORMALS_0;
-	float *NORMALS_1;
-	float *NORMALS_2;
 	int DataSize;
 
 	ClipmapStripPair *VisibleClipmapStrips;
