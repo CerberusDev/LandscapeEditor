@@ -785,37 +785,6 @@ void LandGLContext::ManageInput()
 
 		View = lookAt(CameraPosition, CameraPosition + Direction, Up);
     }
-
-	//if (Keys[4])
-	//{
-	//	OffsetY += (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
-	//	ClipmapWireframeShad.SetTestOffsetY(OffsetY);
-	//	UpdateTBO();
-	//}
-	//if (Keys[5])
-	//{
-	//	OffsetY -= (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
-	//	ClipmapWireframeShad.SetTestOffsetY(OffsetY);
-	//	UpdateTBO();
-	//}
-	//if (Keys[6])
-	//{
-	//	OffsetX -= (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
-	//	ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-	//	UpdateTBO();
-	//}
-	//if (Keys[7])
-	//{
-	//	OffsetX += (MovementSpeed * CurrentMovementModifier) / CurrentLandscape->GetOffset();
-	//	ClipmapWireframeShad.SetTestOffsetX(OffsetX);
-	//	UpdateTBO();
-	//}
-
-    //if (Keys[8] || Keys[9])
-    //{
-    //    CurrentLandscape->UpdateHeightmap(CurrentBrush);
-    //    ResetTBO();
-    //}
 }
 
 // --------------------------------------------------------------------
