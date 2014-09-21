@@ -10,7 +10,7 @@ uniform mat4 gWorld;
 uniform samplerBuffer TBOSampler;
 uniform float CameraOffsetX;
 uniform float CameraOffsetY;
-uniform float ClipmapScale;
+uniform int ClipmapScale;
 
 
 int imod(in int x, in int y)

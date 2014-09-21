@@ -28,7 +28,7 @@ public:
 	void SetBrushColor(vec3 Value) {SetUniform("BrushColor", Value);};
 	void SetCameraOffsetX(float Value) {SetUniform("CameraOffsetX", Value);};
 	void SetCameraOffsetY(float Value) {SetUniform("CameraOffsetY", Value);};
-	void SetClipmapScale(float Value) {SetUniform("ClipmapScale", Value);};
+	void SetClipmapScale(int Value) {SetUniform("ClipmapScale", Value);};
 	void SetTextureSampler(int Value) {SetUniform("TextureSampler", Value);};
 
     /// Standard constructor

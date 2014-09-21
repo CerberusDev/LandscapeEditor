@@ -11,8 +11,8 @@ uniform mat4 gWorld;
 uniform samplerBuffer TBOSampler;
 uniform float CameraOffsetX;
 uniform float CameraOffsetY;
-uniform float ClipmapScale;
-uniform vec2 ClipmapPartOffset;
+uniform int ClipmapScale;
+
 
 int imod(in int x, in int y)
 {
@@ -56,7 +56,7 @@ void main()
 	int TBOIndex = CalculateTBOIndex(PosX, PosY, iCameraOffsetX, iCameraOffsetY);
 	float VertexHeight = texelFetch(TBOSampler, TBOIndex).w;
 		
-    gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight + ClipmapPartOffset.x * 0.0000001, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
+    gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
 	UV = vec2(BaseY, BaseX);
 
 
