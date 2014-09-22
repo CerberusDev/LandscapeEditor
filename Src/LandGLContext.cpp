@@ -42,13 +42,13 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(10), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(1), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
 VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
 
-	DataSize = 4240;
-	StartIndexX = StartIndexY = 2100;
+	DataSize = 424;
+	StartIndexX = StartIndexY = 210;
 
 	DATA = new float[DataSize * DataSize];
 
@@ -61,18 +61,18 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 			//DATA[i + DataSize * j] = 650.0f + i / 10.0f;
 			//DATA[i + DataSize * j] = (i % 32) / 8.0f + 430.0f;
 			//DATA[i + DataSize * j] = (j % 512 == 113 || i % 512 == 113) ? (20.0f) : (0.0f);
-			//DATA[i + DataSize * j] = 650.0f;
-			//DATA[i + DataSize * j] = 600.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
+			DATA[i + DataSize * j] = 93.0f;
+			//DATA[i + DataSize * j] = 50.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
 			//DATA[i + DataSize * j] = 600.0f + j / 11.0f + i / 4.36f;
 			//DATA[i + DataSize * j] = sin(float(j) / 400.f) * 80.0f + 300.0f;
 			//DATA[i + DataSize * j] = 670.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
 
-			float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
-			float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
-			float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
-			float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
-			float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
-			DATA[i + DataSize * j] = (a + b + c + d + e) * 5.0f;
+			//float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
+			//float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
+			//float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
+			//float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
+			//float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
+			//DATA[i + DataSize * j] = (a + b + c + d + e) * 5.0f;
 		}
 
 		if (DataSize > 10 && i % (DataSize / 10) == 0)
@@ -110,7 +110,7 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 	else 
 		ERR("Failed to initialize GLEW!");
 
-    CurrentLandscape = new Landscape(7, 1.0f);
+    CurrentLandscape = new Landscape(2, 1.0f);
     LOG("Initial Landscape created");
 
 	StartIndexX += CurrentLandscape->GetTBOSize() / 2;
