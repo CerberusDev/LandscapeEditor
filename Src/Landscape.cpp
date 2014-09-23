@@ -201,7 +201,7 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 		}
 		break;
 	}
-	case IBO_STRIP_1:
+	case IBO_STRIP_1:	// bottom, right
 	{
 		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
 		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
@@ -235,7 +235,7 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 
 		break;
 	}
-	case IBO_STRIP_2:
+	case IBO_STRIP_2:	// bottom, left
 	{
 		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
 		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
@@ -282,7 +282,7 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 
 		break;
 	}
-	case IBO_STRIP_3:
+	case IBO_STRIP_3:	// top, right
 	{
 		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
 		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
@@ -332,7 +332,7 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 
 		break;
 	}
-	case IBO_STRIP_4:
+	case IBO_STRIP_4:	// top, left
 	{
 		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
 		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
