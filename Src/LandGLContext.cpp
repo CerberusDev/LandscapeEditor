@@ -42,7 +42,7 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(1), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(4), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
 VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
@@ -354,69 +354,29 @@ void LandGLContext::DrawScene()
     glActiveTexture(GL_TEXTURE2);
     glEnableVertexAttribArray(0);
 
-	// ------------------ Render Center Clipmap module ------------------
-
 	switch (CurrentDisplayMode)
 	{
-	case LANDSCAPE:
-		ClipmapLandscapeShad.SetgWorld(MVP);
-		ClipmapLandscapeShad.SetClipmapScale(1.0f);
-		break;
-	case WIREFRAME:
-		ClipmapWireframeShad.SetgWorld(MVP);
-		ClipmapWireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
-		ClipmapWireframeShad.SetClipmapScale(1.0f);
-		break;
+	case LANDSCAPE:	ClipmapLandscapeShad.SetgWorld(MVP);	break;
+	case WIREFRAME:	ClipmapWireframeShad.SetgWorld(MVP);	break;
 	}
 
-	RenderLandscapeModule(VBO_CLIPMAP, IBO_CENTER, TBOs[0]);
-
-	float Scale = 2.0f;
-	for (int i = 1; i < ClipmapsAmount; i++, Scale *= 2.0f)
+	float Scale = 1.0f;
+	for (int i = 0; i < ClipmapsAmount; i++, Scale *= 2.0f)
 	{
 		switch (CurrentDisplayMode)
 		{
 		case LANDSCAPE: ClipmapLandscapeShad.SetClipmapScale(Scale); break;
-		case WIREFRAME: ClipmapWireframeShad.SetClipmapScale(Scale); break;
+		case WIREFRAME: 
+			ClipmapWireframeShad.SetClipmapScale(Scale); 
+			ClipmapWireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));	break;
+			break;
 		}
-		
-		RenderLandscapeModule(VBO_CLIPMAP, IBO_CLIPMAP, TBOs[i]);
-	}
 
-	switch (CurrentDisplayMode)
-	{
-	case LANDSCAPE:
-		ClipmapLandscapeShad.SetClipmapScale(1.0f);
-		break;
-	case WIREFRAME:
-		ClipmapWireframeShad.SetClipmapScale(1.0f);
-		ClipmapWireframeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
-		break;
-	}
+		RenderLandscapeModule(VBO_CLIPMAP, i == 0 ? IBO_CENTER : IBO_CLIPMAP, TBOs[i]);
 
-	switch (VisibleClipmapStrips[0])
-	{
-	case CLIPMAP_STRIP_1:
-		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_4, TBOs[0]);
-		break;
-	case CLIPMAP_STRIP_2:
-		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_2, TBOs[0]);
-		break;
-	case CLIPMAP_STRIP_3:
-		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_3, TBOs[0]);
-		break;
-	case CLIPMAP_STRIP_4:
-		RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_1, TBOs[0]);
-		break;
-	}
-
-	Scale = 2.0f;
-	for (int i = 1; i < ClipmapsAmount; i++, Scale *= 2.0f)
-	{
 		switch (CurrentDisplayMode)
 		{
-		case LANDSCAPE: ClipmapLandscapeShad.SetClipmapScale(Scale); break;
-		case WIREFRAME: ClipmapWireframeShad.SetClipmapScale(Scale); break;
+		case WIREFRAME:	ClipmapWireframeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));	break;
 		}
 
 		switch (VisibleClipmapStrips[i])
