@@ -17,8 +17,7 @@ RestartIndex(0xFFFFFFFF), Offset(VerticesInterval), VBOSize(0), IBOSize(0)
 	VBOSize = new unsigned int[VBO_MODES_AMOUNT];
 	IBOSize = new unsigned int[IBO_MODES_AMOUNT];
 
-	ClipmapVBOsWidth[VBO_CLIPMAP] = ClipmapRimWidth * 4 + 2;
-	ClipmapVBOsWidth[VBO_STRIPS] = ClipmapRimWidth * 4 + 4;
+	ClipmapVBOsWidth[VBO_CLIPMAP] = ClipmapRimWidth * 4 + 4;
 	TBOSize = ClipmapRimWidth * 4 + 5;
 
 	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
@@ -69,19 +68,11 @@ Landscape::~Landscape()
 void Landscape::CreateVBO(ClipmapVBOMode Mode)
 {
 	unsigned int CurrentIndex = 0;
-	int Width = ClipmapVBOsWidth[Mode];
-
-	int SquaresNum = Width - 1;
-	int MissingVerticesX = Width / 2 - 1;
-	int RimVerticesX = (Width - MissingVerticesX) / 2;
+	int Width = ClipmapVBOsWidth[VBO_CLIPMAP];
 
 	switch (Mode)
 	{
 	case VBO_CLIPMAP:
-
-		if ((SquaresNum - 1) % 4 != 0 || SquaresNum < 9)
-			ERR("!!! ASSERT FAIL !!!   Bad landscape size!\n");
-
 		VBOSize[Mode] = 2 * pow((float)Width, 2.0f);
 		ClipmapVBOsData[Mode] = new float[VBOSize[Mode]];
  
@@ -95,279 +86,193 @@ void Landscape::CreateVBO(ClipmapVBOMode Mode)
 		}
 
 		break;
-	case VBO_STRIPS:
+	}
+}
 
-		MissingVerticesX = Width - 4;
-		RimVerticesX = 2;
+// --------------------------------------------------------------------
+unsigned int * Landscape::ConstructNiceIBOData(unsigned int Width, bool bOffsetX, bool bOffsetY, unsigned int CenterHoleWidth, unsigned int &DataSize)
+{
+	unsigned int OffsetX = bOffsetX ? 1 : 0;
+	unsigned int OffsetY = bOffsetY ? 1 : 0;
+	unsigned int CurrentIndex = 0;
+	unsigned int Limit = 0;
 
-		VBOSize[Mode] = 2 * (pow((float)Width, 2.0f) - pow(MissingVerticesX, 2.0f));
-		ClipmapVBOsData[Mode] = new float[VBOSize[Mode]];
- 
-		for (int y = 0; y < Width; y++)
+	if (CenterHoleWidth > 0)
+	{
+		Limit = (Width - CenterHoleWidth) / 2;
+		DataSize = 4 * ((Width - 2) / 2 * 6 - 2) + (Width - 4) * (Width - 3) * 2 + Width - 4 - (CenterHoleWidth) * (CenterHoleWidth + 1) * 2 + CenterHoleWidth + 1;
+	}
+	else
+	{
+		DataSize = 4 * ((Width - 2) / 2 * 6 - 2) + (Width - 4) * (Width - 3) * 2 + Width - 4;
+	}
+	
+	unsigned int * IBOData = new unsigned int[DataSize];
+
+	// ======================= Central part ===========================
+
+	if (CenterHoleWidth == 0)
+	{
+		for (unsigned int x = 2 - OffsetX; x < Width - 2 - OffsetX; x++)
 		{
-			for (int x = 0; x < Width; x++)
+			for (unsigned int y = 2 - OffsetY; y < Width - 1 - OffsetY; y++)
 			{
-				if (x < RimVerticesX || x >= RimVerticesX + MissingVerticesX || y < RimVerticesX || y >= RimVerticesX + MissingVerticesX)
-				{
-					ClipmapVBOsData[Mode][CurrentIndex++] = (x - float(Width - 1) / 2.0f + 0.5f) + 0.0f;
-					ClipmapVBOsData[Mode][CurrentIndex++] = (y - float(Width - 1) / 2.0f + 0.5f);
-				}
+				IBOData[CurrentIndex++] = x * Width + y;
+				IBOData[CurrentIndex++] = (x + 1) * Width + y;
 			}
+			IBOData[CurrentIndex++] = RestartIndex;
+		}
+	}
+	else
+	{
+		for (unsigned int x = 2 - OffsetX; x < Limit - 1; x++)
+		{
+			for (unsigned int y = 2 - OffsetY; y < Width - 1 - OffsetY; y++)
+			{
+				IBOData[CurrentIndex++] = x * Width + y;
+				IBOData[CurrentIndex++] = (x + 1) * Width + y;
+			}
+			IBOData[CurrentIndex++] = RestartIndex;
 		}
 
-		break;
+		for (unsigned int x = Limit + CenterHoleWidth; x < Width - 2 - OffsetX; x++)
+		{
+			for (unsigned int y = 2 - OffsetY; y < Width - 1 - OffsetY; y++)
+			{
+				IBOData[CurrentIndex++] = x * Width + y;
+				IBOData[CurrentIndex++] = (x + 1) * Width + y;
+			}
+			IBOData[CurrentIndex++] = RestartIndex;
+		}
+
+		for (unsigned int x = Limit - 1; x < Limit + CenterHoleWidth; x++)
+		{
+			for (unsigned int y = 2 - OffsetY; y < Limit; y++)
+			{
+				IBOData[CurrentIndex++] = x * Width + y;
+				IBOData[CurrentIndex++] = (x + 1) * Width + y;
+			}
+			IBOData[CurrentIndex++] = RestartIndex;
+		}
+
+		for (unsigned int x = Limit - 1; x < Limit + CenterHoleWidth; x++)
+		{
+			for (unsigned int y = Limit + CenterHoleWidth; y < Width - 1 - OffsetY; y++)
+			{
+				IBOData[CurrentIndex++] = x * Width + y;
+				IBOData[CurrentIndex++] = (x + 1) * Width + y;
+			}
+			IBOData[CurrentIndex++] = RestartIndex;
+		}
 	}
+	// ======================= Bottom part ===========================
+
+	for (unsigned int y = 2 - OffsetY; y < Width - 2 - OffsetY; y += 2)
+	{
+		IBOData[CurrentIndex++] = (2 - OffsetX) * Width + y + 1;
+		IBOData[CurrentIndex++] = (1 - OffsetX) * Width + y + 1;
+		IBOData[CurrentIndex++] = (2 - OffsetX) * Width + y;
+		IBOData[CurrentIndex++] = (1 - OffsetX) * Width + y - 1;
+		if (y > 3 - OffsetY)
+			IBOData[CurrentIndex++] = (2 - OffsetX) * Width + y - 1;
+		IBOData[CurrentIndex++] = RestartIndex;
+	}
+
+	IBOData[CurrentIndex++] = (3 - OffsetX) * Width - 3 - OffsetY;
+	IBOData[CurrentIndex++] = (3 - OffsetX) * Width - 2 - OffsetY;
+	IBOData[CurrentIndex++] = (2 - OffsetX) * Width - 3 - OffsetY;
+	IBOData[CurrentIndex++] = (2 - OffsetX) * Width - 1 - OffsetY;
+	IBOData[CurrentIndex++] = RestartIndex;
+
+	// ======================= Top part ===========================
+
+	IBOData[CurrentIndex++] = (Width - 2 - OffsetX) * Width + 3 - OffsetY;
+	IBOData[CurrentIndex++] = (Width - 2 - OffsetX) * Width + 2 - OffsetY;
+	IBOData[CurrentIndex++] = (Width - 1 - OffsetX) * Width + 3 - OffsetY;
+	IBOData[CurrentIndex++] = (Width - 1 - OffsetX) * Width + 1 - OffsetY;
+	IBOData[CurrentIndex++] = RestartIndex;
+
+	for (unsigned int y = 4 - OffsetY; y < Width - OffsetY; y += 2)
+	{
+		IBOData[CurrentIndex++] = (Width - 2 - OffsetX) * Width + y - 1;
+		IBOData[CurrentIndex++] = (Width - 1 - OffsetX) * Width + y - 1;
+		IBOData[CurrentIndex++] = (Width - 2 - OffsetX) * Width + y;
+		IBOData[CurrentIndex++] = (Width - 1 - OffsetX) * Width + y + 1;
+		if (y < Width - 3 - OffsetY)
+			IBOData[CurrentIndex++] = (Width - 2 - OffsetX) * Width + y + 1;
+		IBOData[CurrentIndex++] = RestartIndex;
+	}
+
+	// ======================= Right part ===========================
+
+	IBOData[CurrentIndex++] = (1 - OffsetX) * Width + 1 - OffsetY;
+	IBOData[CurrentIndex++] = (3 - OffsetX) * Width + 1 - OffsetY;
+	IBOData[CurrentIndex++] = (2 - OffsetX) * Width + 2 - OffsetY;
+	IBOData[CurrentIndex++] = (3 - OffsetX) * Width + 2 - OffsetY;
+	IBOData[CurrentIndex++] = RestartIndex;
+		
+	for (unsigned int x = 3 - OffsetX; x < Width - 1 - OffsetX; x += 2)
+	{
+		IBOData[CurrentIndex++] = x * Width + 2 - OffsetY;
+		IBOData[CurrentIndex++] = x * Width + 1 - OffsetY;
+		IBOData[CurrentIndex++] = (x + 1) * Width + 2 - OffsetY;
+		IBOData[CurrentIndex++] = (x + 2) * Width + 1 - OffsetY;
+		if (x < Width - 4 - OffsetX)
+			IBOData[CurrentIndex++] = (x + 2) * Width + 2 - OffsetY;
+		IBOData[CurrentIndex++] = RestartIndex;
+	}
+
+	// ======================= Left part ===========================
+
+	for (unsigned int x = 1 - OffsetX; x < Width - 3 - OffsetX; x += 2)
+	{
+		IBOData[CurrentIndex++] = (x + 3) * Width - 2 - OffsetY;
+		IBOData[CurrentIndex++] = (x + 3) * Width - 1 - OffsetY;
+		IBOData[CurrentIndex++] = (x + 2) * Width - 2 - OffsetY;
+		IBOData[CurrentIndex++] = (x + 1) * Width - 1 - OffsetY;
+		if (x > 2 - OffsetX)
+			IBOData[CurrentIndex++] = (x + 1) * Width - 2 - OffsetY;
+		IBOData[CurrentIndex++] = RestartIndex;
+	}
+
+	IBOData[CurrentIndex++] = (Width - OffsetX) * Width - 1 - OffsetY;
+	IBOData[CurrentIndex++] = (Width - 2 - OffsetX) * Width - 1 - OffsetY;
+	IBOData[CurrentIndex++] = (Width - 1 - OffsetX) * Width - 2 - OffsetY;
+	IBOData[CurrentIndex++] = (Width - 2 - OffsetX) * Width - 2 - OffsetY;
+	IBOData[CurrentIndex++] = RestartIndex;
+
+	return IBOData;
 }
 
 // --------------------------------------------------------------------
 void Landscape::CreateIBO(ClipmapIBOMode Mode)
 {
-	unsigned int CurrentIndex = 0;
-	int Width = 0;
-
-	if (Mode == IBO_CENTER || Mode == IBO_CLIPMAP)
-		Width = ClipmapVBOsWidth[VBO_CLIPMAP];
-	else
-		Width = ClipmapVBOsWidth[VBO_STRIPS];
-
-	int MissingVerticesX = Width / 2 - 1;
-	int RimVerticesX = (Width - MissingVerticesX) / 2;
-
 	switch (Mode)
 	{
-	case IBO_CENTER:
-	{
-		IBOSize[Mode] = (Width * 2) * (Width - 1) + (Width - 1);
-		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
-
-		for (int x = 0; x < Width - 1; x++)
-		{
-			for (int y = 0; y < Width; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * Width + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * Width + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
+	case IBO_CENTER_1:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, false, 0, IBOSize[Mode]);
 		break;
-	}
-	case IBO_CLIPMAP:
-	{
-		IBOSize[Mode] = ((Width * 2) + 1) * (RimVerticesX - 1) +
-						  ((MissingVerticesX + 2) * 2) * RimVerticesX +
-						  ((MissingVerticesX + 2) * 2) * RimVerticesX +
-						  ((Width * 2) + 1) * (RimVerticesX - 1);
-
-		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
-
-		for (int x = 0; x < RimVerticesX-1; x++)
-		{
-			for (int y = 0; y < Width; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * Width + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * Width + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = RimVerticesX-1; x < RimVerticesX + MissingVerticesX; x++)
-		{
-			for (int y = 0; y < RimVerticesX; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * Width + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * Width + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = RimVerticesX-1; x < RimVerticesX + MissingVerticesX; x++)
-		{
-			for (int y = RimVerticesX + MissingVerticesX; y < Width; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * Width + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * Width + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = RimVerticesX + MissingVerticesX; x < Width-1; x++)
-		{
-			for (int y = 0; y < Width; y++)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = x * Width + y;
-				ClipmapIBOsData[Mode][CurrentIndex++] = (x+1) * Width + y;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
+	case IBO_CENTER_2:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, false, 0, IBOSize[Mode]);
 		break;
-	}
-	case IBO_STRIP_1:	// bottom, right
-	{
-		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
-		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
-
-		for (int y = 1; y < Width - 1; y += 2)
-		{
-			ClipmapIBOsData[Mode][CurrentIndex++] = Width + y + 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = y + 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = Width + y;
-			ClipmapIBOsData[Mode][CurrentIndex++] = y - 1;
-			if (y > 2)
-				ClipmapIBOsData[Mode][CurrentIndex++] = Width + y - 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = 3; x < Width - 1; x += 2)
-		{
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 3) * 4 + 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 3) * 4;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 2) * 4 + 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4 + 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		ClipmapIBOsData[Mode][CurrentIndex++] = 0;
-		ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width;
-		ClipmapIBOsData[Mode][CurrentIndex++] = Width + 1;
-		ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + 1;
-		ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-
+	case IBO_CENTER_3:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, true, 0, IBOSize[Mode]);
 		break;
-	}
-	case IBO_STRIP_2:	// bottom, left
-	{
-		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
-		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
-
-		for (int y = 2; y < Width - 2; y += 2)
-		{
-			ClipmapIBOsData[Mode][CurrentIndex++] = Width + y + 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = y + 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = Width + y;
-			ClipmapIBOsData[Mode][CurrentIndex++] = y - 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = Width + y - 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-		ClipmapIBOsData[Mode][CurrentIndex++] = Width - 1;
-		ClipmapIBOsData[Mode][CurrentIndex++] = Width - 3;
-		ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width - 2;
-		ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width - 3;
-		ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-
-		for (int x = 0; x < Width - 3; x += 2)
-		{
-			if (x > Width - 5)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = 3 * Width + (x + 0) * 4 - 2;
-				ClipmapIBOsData[Mode][CurrentIndex++] = 3 * Width + (x + 0) * 4 - 1;
-			}
-			else
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x + 1) * 4 - 2;
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x + 1) * 4 - 1;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + x * 4 - 2;
-			if (x < 1)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = Width + (x - 0) * 4 - 1;
-			}
-			else
-			{			
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4 - 1;
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4 - 2;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
+	case IBO_CENTER_4:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, true, 0, IBOSize[Mode]);
 		break;
-	}
-	case IBO_STRIP_3:	// top, right
-	{
-		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
-		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
-
-		int Offset = pow(Width - 4, 2.0f);
-
-		ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 1) * Width - Offset;
-		ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 1) * Width + 2 - Offset;
-		ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + 1 - Offset;
-		ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + 2 - Offset;
-		ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-
-		for (int y = 2; y < Width - 2; y += 2)
-		{
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + y - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 1) * Width + y - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + y + 1 - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 1) * Width + y + 2 - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + y + 2 - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = 2; x < Width; x += 2)
-		{
-			if (x < 3)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = Width + (x - 2) * 4 + 1;
-				ClipmapIBOsData[Mode][CurrentIndex++] = Width + (x - 2) * 4;
-			}
-			else
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 3) * 4 + 1;
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 3) * 4;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 2) * 4 + 1;
-			if (x > Width - 3)
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = 3 * Width + (x - 2) * 4;
-			}
-			else
-			{
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4;
-				ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4 + 1;
-			}
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
+	case IBO_CLIPMAP_1:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, false, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
 		break;
-	}
-	case IBO_STRIP_4:	// top, left
-	{
-		IBOSize[Mode] = ((Width / 2) - 1) * 12 - 2;
-		ClipmapIBOsData[Mode] = new unsigned int[IBOSize[Mode]];
-
-		int Offset = pow(Width - 4, 2.0f);
-
-		for (int y = 1; y < Width - 1; y += 2)
-		{
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + y - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 1) * Width + y - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + y + 1 - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 1) * Width + y + 2 - Offset;
-			if (y < Width - 4)
-				ClipmapIBOsData[Mode][CurrentIndex++] = (Width - 2) * Width + y + 2 - Offset;
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		for (int x = 1; x < Width - 4; x += 2)
-		{
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x + 1) * 4 - 2;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x + 1) * 4 - 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + x * 4 - 2;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4 - 1;
-			ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (x - 1) * 4 - 2;
-			ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-		}
-
-		ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (Width - 4) * 4 - 2;
-		ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (Width - 3) * 4 - 2 + (Width - 4);
-		ClipmapIBOsData[Mode][CurrentIndex++] = 2 * Width + (Width - 4) * 4 - 1;
-		ClipmapIBOsData[Mode][CurrentIndex++] = 3 * Width + (Width - 3) * 4 - 1 + (Width - 4);
-		ClipmapIBOsData[Mode][CurrentIndex++] = RestartIndex;
-
+	case IBO_CLIPMAP_2:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, false, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
 		break;
-	}
+	case IBO_CLIPMAP_3:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, true, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
+		break;
+	case IBO_CLIPMAP_4:
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, true, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
+		break;
 	}
 }
 

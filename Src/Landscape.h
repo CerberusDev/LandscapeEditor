@@ -7,15 +7,16 @@
 #include "Brush.h"
 
 enum ClipmapVBOMode		{VBO_CLIPMAP,
-						VBO_STRIPS,
 						VBO_MODES_AMOUNT};
 
-enum ClipmapIBOMode		{IBO_CENTER,
-						IBO_CLIPMAP,
-						IBO_STRIP_1,
-						IBO_STRIP_2,
-						IBO_STRIP_3,
-						IBO_STRIP_4,
+enum ClipmapIBOMode		{IBO_CENTER_1,
+						IBO_CENTER_2,
+						IBO_CENTER_3,
+						IBO_CENTER_4,
+						IBO_CLIPMAP_1,
+						IBO_CLIPMAP_2,
+						IBO_CLIPMAP_3,
+						IBO_CLIPMAP_4,
 						IBO_MODES_AMOUNT};
 
 enum ClipmapStripPair	{CLIPMAP_STRIP_1, 
@@ -72,4 +73,5 @@ public:
 protected: 
 	void CreateVBO(ClipmapVBOMode Mode);
 	void CreateIBO(ClipmapIBOMode Mode);
+	unsigned int * ConstructNiceIBOData(unsigned int Width, bool bOffsetX, bool bOffsetY, unsigned int CenterHoleWidth, unsigned int &DataSize);
 };

@@ -42,13 +42,13 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(4), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(8), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
 VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
 
-	DataSize = 424;
-	StartIndexX = StartIndexY = 210;
+	DataSize = 4240;
+	StartIndexX = StartIndexY = 2100;
 
 	DATA = new float[DataSize * DataSize];
 
@@ -58,14 +58,14 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 	{
 		for (int j = 0; j < DataSize; ++j)
 		{
-			//DATA[i + DataSize * j] = 650.0f + i / 10.0f;
+			//DATA[i + DataSize * j] = 10.0f + i / 10.0f;
 			//DATA[i + DataSize * j] = (i % 32) / 8.0f + 430.0f;
 			//DATA[i + DataSize * j] = (j % 512 == 113 || i % 512 == 113) ? (20.0f) : (0.0f);
-			DATA[i + DataSize * j] = 93.0f;
+			DATA[i + DataSize * j] = 93.8f;
 			//DATA[i + DataSize * j] = 50.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
-			//DATA[i + DataSize * j] = 600.0f + j / 11.0f + i / 4.36f;
+			//DATA[i + DataSize * j] = 20.0f + j / 11.0f + i / 4.36f;
 			//DATA[i + DataSize * j] = sin(float(j) / 400.f) * 80.0f + 300.0f;
-			//DATA[i + DataSize * j] = 670.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
+			//DATA[i + DataSize * j] = 70.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
 
 			//float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
 			//float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
@@ -110,7 +110,7 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 	else 
 		ERR("Failed to initialize GLEW!");
 
-    CurrentLandscape = new Landscape(2, 1.0f);
+    CurrentLandscape = new Landscape(9, 1.0f);
     LOG("Initial Landscape created");
 
 	StartIndexX += CurrentLandscape->GetTBOSize() / 2;
@@ -361,37 +361,33 @@ void LandGLContext::DrawScene()
 	}
 
 	float Scale = 1.0f;
-	for (int i = 0; i < ClipmapsAmount; i++, Scale *= 2.0f)
+	for (int lvl = 0; lvl < ClipmapsAmount; lvl++, Scale *= 2.0f)
 	{
 		switch (CurrentDisplayMode)
 		{
 		case LANDSCAPE: ClipmapLandscapeShad.SetClipmapScale(Scale); break;
 		case WIREFRAME: 
 			ClipmapWireframeShad.SetClipmapScale(Scale); 
-			ClipmapWireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));	break;
+			if (lvl % 2 == 0)
+				ClipmapWireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
+			else
+				ClipmapWireframeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
 			break;
 		}
 
-		RenderLandscapeModule(VBO_CLIPMAP, i == 0 ? IBO_CENTER : IBO_CLIPMAP, TBOs[i]);
-
-		switch (CurrentDisplayMode)
-		{
-		case WIREFRAME:	ClipmapWireframeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));	break;
-		}
-
-		switch (VisibleClipmapStrips[i])
+		switch (VisibleClipmapStrips[lvl])
 		{
 		case CLIPMAP_STRIP_1:
-			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_4, TBOs[i]);
+			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_1 : IBO_CLIPMAP_1, TBOs[lvl]);
 			break;
 		case CLIPMAP_STRIP_2:
-			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_2, TBOs[i]);
+			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_2 : IBO_CLIPMAP_2, TBOs[lvl]);
 			break;
 		case CLIPMAP_STRIP_3:
-			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_3, TBOs[i]);
+			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_3 : IBO_CLIPMAP_3, TBOs[lvl]);
 			break;
 		case CLIPMAP_STRIP_4:
-			RenderLandscapeModule(VBO_STRIPS, IBO_STRIP_1, TBOs[i]);
+			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_4 : IBO_CLIPMAP_4, TBOs[lvl]);
 			break;
 		}
 	}
@@ -781,7 +777,7 @@ void LandGLContext::ResetCamera()
 	OffsetY = 0.0001f;
 
 	CameraPosition = vec3(0.0f, 100.0f, 0.0f);
-	CameraVerticalAngle = -1.62f;
+	CameraVerticalAngle = -1.57f;
     CameraHorizontalAngle = 0.0f;
 
     vec3 Direction(cos(CameraVerticalAngle) * sin(CameraHorizontalAngle), sin(CameraVerticalAngle), cos(CameraVerticalAngle) * cos(CameraHorizontalAngle));
