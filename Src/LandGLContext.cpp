@@ -42,7 +42,7 @@ float LandGLContext::getSecond()
 // --------------------------------------------------------------------
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
-OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(8), VBOs(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
+OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(8), VBO(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
 VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
@@ -86,12 +86,8 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 	for (int i = 0; i < ClipmapsAmount; ++i)
 		VisibleClipmapStrips[i] = CLIPMAP_STRIP_1;
 
-	VBOs = new GLuint[VBO_MODES_AMOUNT];
 	IBOs = new GLuint[IBO_MODES_AMOUNT];
 	IBOLengths = new int[IBO_MODES_AMOUNT];
-
-	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
-		VBOs[i] = 0;
 
 	for (int i = 0; i < IBO_MODES_AMOUNT; ++i)
 	{
@@ -240,7 +236,7 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 // --------------------------------------------------------------------
 LandGLContext::~LandGLContext(void)
 {
-	glDeleteBuffers(VBO_MODES_AMOUNT, VBOs);
+	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(IBO_MODES_AMOUNT, IBOs);
 	glDeleteBuffers(ClipmapsAmount, TBOs);
 
@@ -249,7 +245,6 @@ LandGLContext::~LandGLContext(void)
     glDeleteTextures(1, &BrushTexture);
 
 	delete[] DATA;
-	delete[] VBOs;
 	delete[] IBOs;
 	delete[] IBOLengths;
 }
@@ -262,7 +257,7 @@ void LandGLContext::SetShadersInitialUniforms()
     WireframeShad.SetTBOSampler(2);
     WireframeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     WireframeShad.SetBrushScale(1.0f);
-    WireframeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOWidth(VBO_CLIPMAP) + 1);
+    //WireframeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOWidth() + 1);
     WireframeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     WireframeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
     WireframeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
@@ -290,7 +285,7 @@ void LandGLContext::SetShadersInitialUniforms()
     LandscapeShad.SetTBOSampler(2);
     LandscapeShad.SetBrushPosition(vec2(0.0f, 0.0f));
     LandscapeShad.SetBrushScale(1.0f);
-    LandscapeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOWidth(VBO_CLIPMAP) + 1);
+    //LandscapeShad.SetLandscapeSizeX(CurrentLandscape->GetClipmapVBOWidth() + 1);
     LandscapeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
     LandscapeShad.SetWireframeColor(vec3(0.0f, 0.0f, 0.0f));
     LandscapeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
@@ -378,16 +373,16 @@ void LandGLContext::DrawScene()
 		switch (VisibleClipmapStrips[lvl])
 		{
 		case CLIPMAP_STRIP_1:
-			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_1 : IBO_CLIPMAP_1, TBOs[lvl]);
+			RenderLandscapeModule(lvl == 0 ? IBO_CENTER_1 : IBO_CLIPMAP_1, TBOs[lvl]);
 			break;
 		case CLIPMAP_STRIP_2:
-			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_2 : IBO_CLIPMAP_2, TBOs[lvl]);
+			RenderLandscapeModule(lvl == 0 ? IBO_CENTER_2 : IBO_CLIPMAP_2, TBOs[lvl]);
 			break;
 		case CLIPMAP_STRIP_3:
-			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_3 : IBO_CLIPMAP_3, TBOs[lvl]);
+			RenderLandscapeModule(lvl == 0 ? IBO_CENTER_3 : IBO_CLIPMAP_3, TBOs[lvl]);
 			break;
 		case CLIPMAP_STRIP_4:
-			RenderLandscapeModule(VBO_CLIPMAP, lvl == 0 ? IBO_CENTER_4 : IBO_CLIPMAP_4, TBOs[lvl]);
+			RenderLandscapeModule(lvl == 0 ? IBO_CENTER_4 : IBO_CLIPMAP_4, TBOs[lvl]);
 			break;
 		}
 	}
@@ -399,12 +394,12 @@ void LandGLContext::DrawScene()
 }
 
 // --------------------------------------------------------------------
-void LandGLContext::RenderLandscapeModule(const ClipmapVBOMode VBOMode, const ClipmapIBOMode IBOMode, GLuint TBOID)
+void LandGLContext::RenderLandscapeModule(const ClipmapIBOMode IBOMode, GLuint TBOID)
 {
 	glBindBuffer(GL_TEXTURE_BUFFER, TBOID);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, TBOID);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBOMode]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBOs[IBOMode]);
 
@@ -811,15 +806,12 @@ void LandGLContext::ResetIBO(GLuint &BufferID, unsigned int *NewData, int DataSi
 // --------------------------------------------------------------------
 void LandGLContext::ResetAllVBOIBO()
 {
-	float **ClipmapVBOsData = new float*[VBO_MODES_AMOUNT];
+	float *ClipmapVBOData;
+	int ClipmapVBOSize;
 	unsigned int **ClipmapIBOsData = new unsigned int*[IBO_MODES_AMOUNT];
-	int *ClipmapVBOsSize = new int[VBO_MODES_AMOUNT];
 
-	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
-	{
-		ClipmapVBOsData[i] = CurrentLandscape->GetClipmapVBOData((ClipmapVBOMode)i, ClipmapVBOsSize[i]);
-		ResetVBO(VBOs[i], ClipmapVBOsData[i], ClipmapVBOsSize[i]);
-	}
+	ClipmapVBOData = CurrentLandscape->GetClipmapVBOData(ClipmapVBOSize);
+	ResetVBO(VBO, ClipmapVBOData, ClipmapVBOSize);
 
 	for (int i = 0; i < IBO_MODES_AMOUNT; ++i)
 	{
@@ -827,9 +819,7 @@ void LandGLContext::ResetAllVBOIBO()
 		ResetIBO(IBOs[i], ClipmapIBOsData[i], IBOLengths[i]);
 	}
 
-	delete [] ClipmapVBOsData;
 	delete [] ClipmapIBOsData;
-	delete [] ClipmapVBOsSize;
 }
 
 // --------------------------------------------------------------------

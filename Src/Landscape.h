@@ -6,9 +6,6 @@
 
 #include "Brush.h"
 
-enum ClipmapVBOMode		{VBO_CLIPMAP,
-						VBO_MODES_AMOUNT};
-
 enum ClipmapIBOMode		{IBO_CENTER_1,
 						IBO_CENTER_2,
 						IBO_CENTER_3,
@@ -39,13 +36,17 @@ protected:
     /// Array with heigh vertices data
     float *TrueHeightmap;
 
-	float **ClipmapVBOsData;
-	unsigned int **ClipmapIBOsData;
-	unsigned int *ClipmapVBOsWidth;
-	unsigned int TBOSize;
+	/// VBO Data
+	float *ClipmapVBOData;
+	unsigned int VBOSize;
+	unsigned int ClipmapVBOWidth;
 
-	unsigned int *VBOSize;
+	/// IBO Data
+	unsigned int **ClipmapIBOsData;
 	unsigned int *IBOSize;
+
+	/// TBO Data
+	unsigned int TBOSize;
 
 public:
     /// Standard constructors and destructor
@@ -60,9 +61,8 @@ public:
     void UpdateHeightmap(Brush &AffectingBrush);
 
     /// Getters
-	float * GetClipmapVBOData(ClipmapVBOMode Mode, int &outDataAmount);
+	float * GetClipmapVBOData(int &outDataAmount);
 	unsigned int * GetClipmapIBOData(ClipmapIBOMode Mode, int &outDataAmount);
-	unsigned int GetClipmapVBOWidth(ClipmapVBOMode Mode) {return ClipmapVBOsWidth[Mode];};
 	unsigned int GetTBOSize() {return TBOSize;};
     float * GetHeightmap(int &VerticesAmountX);
     float GetOffset() {return Offset;};
@@ -71,7 +71,7 @@ public:
 	Landscape & operator= (Landscape & other) {return other;};
    
 protected: 
-	void CreateVBO(ClipmapVBOMode Mode);
+	void CreateVBO();
 	void CreateIBO(ClipmapIBOMode Mode);
 	unsigned int * ConstructNiceIBOData(unsigned int Width, bool bOffsetX, bool bOffsetY, unsigned int CenterHoleWidth, unsigned int &DataSize);
 };

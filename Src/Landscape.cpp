@@ -10,18 +10,14 @@
 Landscape::Landscape(int ClipmapRimWidth, float VerticesInterval):
 RestartIndex(0xFFFFFFFF), Offset(VerticesInterval), VBOSize(0), IBOSize(0)
 {
-	ClipmapVBOsData = new float*[VBO_MODES_AMOUNT];
 	ClipmapIBOsData = new unsigned int*[IBO_MODES_AMOUNT];
-	ClipmapVBOsWidth = new unsigned int[VBO_MODES_AMOUNT];
 
-	VBOSize = new unsigned int[VBO_MODES_AMOUNT];
 	IBOSize = new unsigned int[IBO_MODES_AMOUNT];
 
-	ClipmapVBOsWidth[VBO_CLIPMAP] = ClipmapRimWidth * 4 + 4;
+	ClipmapVBOWidth = ClipmapRimWidth * 4 + 4;
 	TBOSize = ClipmapRimWidth * 4 + 5;
 
-	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
-		CreateVBO((ClipmapVBOMode)i);
+	CreateVBO();
 
 	for (int i = 0; i < IBO_MODES_AMOUNT; ++i)
 		CreateIBO((ClipmapIBOMode)i);
@@ -34,7 +30,7 @@ RestartIndex(0xFFFFFFFF), Offset(0.25f)
     unsigned int DataByteSize;
 
     TrueHeightmap = (float*)LandscapeEditor::FileRead(FilePath, DataByteSize);
-    ClipmapVBOsWidth[0] = sqrt((float)DataByteSize / 4.0);
+    ClipmapVBOWidth = sqrt((float)DataByteSize / 4.0);
 
     //CenterVBOData = new float[ClipmapVBOsWidth[0] * ClipmapVBOsWidth[0] * 2];
 
@@ -53,39 +49,29 @@ RestartIndex(0xFFFFFFFF), Offset(0.25f)
 // --------------------------------------------------------------------
 Landscape::~Landscape()
 {
-	for (int i = 0; i < VBO_MODES_AMOUNT; ++i)
-		delete [] ClipmapVBOsData[i];
-
 	for (int i = 0; i < IBO_MODES_AMOUNT; ++i)
 		delete [] ClipmapIBOsData[i];
 
-	delete [] ClipmapVBOsData;
 	delete [] ClipmapIBOsData;
-	delete [] ClipmapVBOsWidth;
+	delete [] ClipmapVBOData;
 }
 
 // --------------------------------------------------------------------
-void Landscape::CreateVBO(ClipmapVBOMode Mode)
+void Landscape::CreateVBO()
 {
 	unsigned int CurrentIndex = 0;
-	int Width = ClipmapVBOsWidth[VBO_CLIPMAP];
+	int Width = ClipmapVBOWidth;
 
-	switch (Mode)
-	{
-	case VBO_CLIPMAP:
-		VBOSize[Mode] = 2 * pow((float)Width, 2.0f);
-		ClipmapVBOsData[Mode] = new float[VBOSize[Mode]];
+	VBOSize = 2 * pow((float)Width, 2.0f);
+	ClipmapVBOData = new float[VBOSize];
  
-		for (int y = 0; y < Width; y++)
+	for (int y = 0; y < Width; y++)
+	{
+		for (int x = 0; x < Width; x++)
 		{
-			for (int x = 0; x < Width; x++)
-			{
-				ClipmapVBOsData[Mode][CurrentIndex++] = (x - float(Width - 1) / 2.0f + 0.5f);
-				ClipmapVBOsData[Mode][CurrentIndex++] = (y - float(Width - 1) / 2.0f + 0.5f);
-			}
+			ClipmapVBOData[CurrentIndex++] = (x - float(Width - 1) / 2.0f + 0.5f);
+			ClipmapVBOData[CurrentIndex++] = (y - float(Width - 1) / 2.0f + 0.5f);
 		}
-
-		break;
 	}
 }
 
@@ -250,28 +236,28 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 	switch (Mode)
 	{
 	case IBO_CENTER_1:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, false, 0, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, false, false, 0, IBOSize[Mode]);
 		break;
 	case IBO_CENTER_2:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, false, 0, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, true, false, 0, IBOSize[Mode]);
 		break;
 	case IBO_CENTER_3:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, true, 0, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, false, true, 0, IBOSize[Mode]);
 		break;
 	case IBO_CENTER_4:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, true, 0, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, true, true, 0, IBOSize[Mode]);
 		break;
 	case IBO_CLIPMAP_1:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, false, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, false, false, ClipmapVBOWidth / 2 - 2, IBOSize[Mode]);
 		break;
 	case IBO_CLIPMAP_2:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, false, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, true, false, ClipmapVBOWidth / 2 - 2, IBOSize[Mode]);
 		break;
 	case IBO_CLIPMAP_3:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], false, true, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, false, true, ClipmapVBOWidth / 2 - 2, IBOSize[Mode]);
 		break;
 	case IBO_CLIPMAP_4:
-		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOsWidth[VBO_CLIPMAP], true, true, ClipmapVBOsWidth[VBO_CLIPMAP] / 2 - 2, IBOSize[Mode]);
+		ClipmapIBOsData[Mode] = ConstructNiceIBOData(ClipmapVBOWidth, true, true, ClipmapVBOWidth / 2 - 2, IBOSize[Mode]);
 		break;
 	}
 }
@@ -279,7 +265,7 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 // --------------------------------------------------------------------
 bool Landscape::SaveToFile(const char* FilePath)
 {
-    LandscapeEditor::FileWrite(FilePath, TrueHeightmap, ClipmapVBOsWidth[0] * ClipmapVBOsWidth[0]);
+    LandscapeEditor::FileWrite(FilePath, TrueHeightmap, ClipmapVBOWidth * ClipmapVBOWidth);
 
     return true;
 }
@@ -297,19 +283,19 @@ void Landscape::UpdateHeightmap(Brush &AffectingBrush)
 
     if (AffectingBrush.GetMode())
     {
-        for (unsigned int x = 0; x < ClipmapVBOsWidth[0]; x++)
+        for (unsigned int x = 0; x < ClipmapVBOWidth; x++)
         {
-            for (unsigned int z = 0; z < ClipmapVBOsWidth[0]; z++)
+            for (unsigned int z = 0; z < ClipmapVBOWidth; z++)
             {
-                CurrentVec.x = ClipmapVBOsData[0][2 * (z * ClipmapVBOsWidth[0] + x)];
-                CurrentVec.y = ClipmapVBOsData[0][2 * (z * ClipmapVBOsWidth[0] + x) + 1];
+                CurrentVec.x = ClipmapVBOData[2 * (z * ClipmapVBOWidth + x)];
+                CurrentVec.y = ClipmapVBOData[2 * (z * ClipmapVBOWidth + x) + 1];
 
                 Distance = distance(CurrentVec, BrushPosition);
                 
                 if (Distance <= BrushRadius)
                 {
                     Counter++;
-                    HeightSum += TrueHeightmap[z * ClipmapVBOsWidth[0] + x];
+                    HeightSum += TrueHeightmap[z * ClipmapVBOWidth + x];
                 }
             }
         }
@@ -317,12 +303,12 @@ void Landscape::UpdateHeightmap(Brush &AffectingBrush)
         HeightAverage = HeightSum / Counter;
     }
 
-    for (unsigned int x = 0; x < ClipmapVBOsWidth[0]; x++)
+    for (unsigned int x = 0; x < ClipmapVBOWidth; x++)
     {
-        for (unsigned int z = 0; z < ClipmapVBOsWidth[0]; z++)
+        for (unsigned int z = 0; z < ClipmapVBOWidth; z++)
         {
-            CurrentVec.x = ClipmapVBOsData[0][2 * (z * ClipmapVBOsWidth[0] + x)];
-            CurrentVec.y = ClipmapVBOsData[0][2 * (z * ClipmapVBOsWidth[0] + x) + 1];
+            CurrentVec.x = ClipmapVBOData[2 * (z * ClipmapVBOWidth + x)];
+            CurrentVec.y = ClipmapVBOData[2 * (z * ClipmapVBOWidth + x) + 1];
 
             Distance = distance(CurrentVec, BrushPosition);
 
@@ -333,17 +319,17 @@ void Landscape::UpdateHeightmap(Brush &AffectingBrush)
                 switch (AffectingBrush.GetMode())
                 {
                 case 0:           
-                    TrueHeightmap[z * ClipmapVBOsWidth[0] + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
+                    TrueHeightmap[z * ClipmapVBOWidth + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
                     break;
                 case 1:
-                    TrueHeightmap[z * ClipmapVBOsWidth[0] + x] -= 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
+                    TrueHeightmap[z * ClipmapVBOWidth + x] -= 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
                     break;
                 case 2:
-                    HeightDifference = HeightAverage - TrueHeightmap[z * ClipmapVBOsWidth[0] + x];
-                    TrueHeightmap[z * ClipmapVBOsWidth[0] + x] += 0.02f * HeightDifference;
+                    HeightDifference = HeightAverage - TrueHeightmap[z * ClipmapVBOWidth + x];
+                    TrueHeightmap[z * ClipmapVBOWidth + x] += 0.02f * HeightDifference;
                     break;
                 case 3:
-                    TrueHeightmap[z * ClipmapVBOsWidth[0] + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (pow(1.0f - DistanceFactor, 2))); 
+                    TrueHeightmap[z * ClipmapVBOWidth + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (pow(1.0f - DistanceFactor, 2))); 
                     break;
                 }
             }   
@@ -352,10 +338,10 @@ void Landscape::UpdateHeightmap(Brush &AffectingBrush)
 }
 
 // --------------------------------------------------------------------
-float * Landscape::GetClipmapVBOData(ClipmapVBOMode Mode, int &outDataAmount)
+float * Landscape::GetClipmapVBOData(int &outDataAmount)
 {
-	outDataAmount = VBOSize[Mode];
-    return ClipmapVBOsData[Mode];
+	outDataAmount = VBOSize;
+    return ClipmapVBOData;
 }
 
 // --------------------------------------------------------------------
@@ -368,11 +354,11 @@ unsigned int * Landscape::GetClipmapIBOData(ClipmapIBOMode Mode, int &outDataAmo
 // --------------------------------------------------------------------
 float * Landscape::GetHeightmap(int &VerticesAmountX)
 {
-    VerticesAmountX = ClipmapVBOsWidth[0];
+    VerticesAmountX = ClipmapVBOWidth;
 
-    float *Data = new float[ClipmapVBOsWidth[0] * ClipmapVBOsWidth[0]];
+    float *Data = new float[ClipmapVBOWidth * ClipmapVBOWidth];
 
-    for (unsigned int i = 0; i < ClipmapVBOsWidth[0] * ClipmapVBOsWidth[0]; i++)
+    for (unsigned int i = 0; i < ClipmapVBOWidth * ClipmapVBOWidth; i++)
         Data[i] = TrueHeightmap[i];
 
     return Data;

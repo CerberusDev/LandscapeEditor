@@ -44,7 +44,7 @@ protected:
 	int ClipmapsAmount;
 
     /// Buffer objects
-	GLuint *VBOs;
+	GLuint VBO;
 	GLuint *IBOs;
 	GLuint *TBOs;
 
@@ -149,7 +149,7 @@ protected:
 
 	void InitTBO(GLuint TBOID, int ClipmapScale = 1);
 	void SetShadersInitialUniforms();
-	void RenderLandscapeModule(const ClipmapVBOMode VBOMode, const ClipmapIBOMode IBOMode, GLuint TBOID);
+	void RenderLandscapeModule(const ClipmapIBOMode IBOMode, GLuint TBOID);
 	void ResetVBO(GLuint &BufferID, float *NewData, int DataSize);
 	void ResetIBO(GLuint &BufferID, unsigned int *NewData, int DataSize);
 	float getSecond();
