@@ -3,6 +3,7 @@
 layout (location = 0) in vec2 Position;
 
 out vec2 UV;
+out vec2 UVBrush;
 out vec3 Normal;
 
 uniform int ClipmapWidth;
@@ -57,8 +58,9 @@ void main()
 	float VertexHeight = texelFetch(TBOSampler, TBOIndex).r;
 		
     gl_Position = gWorld * vec4((BaseX - VertexOffsetX) * LandscapeVertexOffset, VertexHeight, (BaseY - VertexOffsetY) * LandscapeVertexOffset, 1.0);
-	UV = vec2(BaseY, BaseX);
 
+	UVBrush = vec2(BaseY - VertexOffsetY, BaseX - VertexOffsetX);
+	UV = vec2(BaseY, BaseX);
 
 	TBOIndex = CalculateTBOIndex(PosX + 1, PosY, iCameraOffsetX, iCameraOffsetY);
 	float VH1 = texelFetch(TBOSampler, TBOIndex).r;

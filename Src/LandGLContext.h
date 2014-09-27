@@ -96,6 +96,8 @@ protected:
 
 	bool bNewLandscape;
 
+	int MouseX, MouseY;
+
 public:
     /// Standard constructor/destructor
     LandGLContext(wxGLCanvas *canvas);
@@ -153,4 +155,5 @@ protected:
 	void ResetVBO(GLuint &BufferID, float *NewData, int DataSize);
 	void ResetIBO(GLuint &BufferID, unsigned int *NewData, int DataSize);
 	float getSecond();
+	void UpdateBrushPosition();
 };

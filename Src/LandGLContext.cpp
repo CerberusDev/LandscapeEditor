@@ -43,12 +43,12 @@ float LandGLContext::getSecond()
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
 OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(8), VBO(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
-VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
+VisibleClipmapStrips(0), CurrentDisplayMode(LANDSCAPE), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
 
-	DataSize = 4240;
-	StartIndexX = StartIndexY = 2100;
+	DataSize = 424;
+	StartIndexX = StartIndexY = 210;
 
 	DATA = new float[DataSize * DataSize];
 
@@ -61,11 +61,11 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 			//DATA[i + DataSize * j] = 10.0f + i / 10.0f;
 			//DATA[i + DataSize * j] = (i % 32) / 8.0f + 430.0f;
 			//DATA[i + DataSize * j] = (j % 512 == 113 || i % 512 == 113) ? (20.0f) : (0.0f);
-			DATA[i + DataSize * j] = 93.8f;
+			//DATA[i + DataSize * j] = 93.8f;
 			//DATA[i + DataSize * j] = 50.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
 			//DATA[i + DataSize * j] = 20.0f + j / 11.0f + i / 4.36f;
 			//DATA[i + DataSize * j] = sin(float(j) / 400.f) * 80.0f + 300.0f;
-			//DATA[i + DataSize * j] = 70.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
+			DATA[i + DataSize * j] = 70.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
 
 			//float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
 			//float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
@@ -163,8 +163,8 @@ VisibleClipmapStrips(0), CurrentDisplayMode(WIREFRAME), DATA(0), CurrentMovement
 
     // ----------------------------- Landscape Texture --------------------------------
     glActiveTexture(GL_TEXTURE0);
-    if (TextureManager::Inst()->LoadTexture("Content/Textures/grass.tga", LandscapeTexture))
-	//if (TextureManager::Inst()->LoadTexture("Content/Textures/test_diffuse.tga", LandscapeTexture))
+    //if (TextureManager::Inst()->LoadTexture("Content/Textures/grass.tga", LandscapeTexture))
+	if (TextureManager::Inst()->LoadTexture("Content/Textures/test_diffuse.tga", LandscapeTexture))
 	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -301,8 +301,6 @@ void LandGLContext::SetShadersInitialUniforms()
     ClipmapLandscapeShad.SetBrushPosition(CurrentBrush.GetRenderPosition());
     ClipmapLandscapeShad.SetBrushScale(CurrentBrush.GetRadius() * 2.0f);
     ClipmapLandscapeShad.SetLandscapeVertexOffset(CurrentLandscape->GetOffset());
-    ClipmapLandscapeShad.SetBrushColor(vec3(1.0f, 1.0f, 1.0f));
-	ClipmapLandscapeShad.SetWireframeColor(vec3(0.6f, 0.0f, 0.0f));
 	ClipmapLandscapeShad.SetCameraOffsetX(0.0f);
 	ClipmapLandscapeShad.SetCameraOffsetY(0.0f);
 	ClipmapLandscapeShad.SetgWorld(mat4(0.0f));
@@ -539,9 +537,32 @@ void LandGLContext::OnResize(wxSize NewSize)
 }
 
 // --------------------------------------------------------------------
+void LandGLContext::UpdateBrushPosition()
+{
+    GLfloat winZ;
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    glReadPixels(MouseX, viewport[3] - MouseY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+    vec3 screenPos = vec3(MouseX, viewport[3] - MouseY, winZ);
+    vec3 worldPos = unProject(screenPos, View, Projection, vec4(0.0f, 0.0f, viewport[2], viewport[3]));
+
+    CurrentBrush.SetPosition(worldPos);
+
+	switch (CurrentDisplayMode)
+	{
+	case LANDSCAPE: ClipmapLandscapeShad.SetBrushPosition(CurrentBrush.GetRenderPosition()); break;
+	case WIREFRAME:	ClipmapWireframeShad.SetBrushPosition(CurrentBrush.GetRenderPosition()); break;
+	}
+}
+
+// --------------------------------------------------------------------
 void LandGLContext::OnMouse(wxMouseEvent& event)
 {
     static float StartX = 0.0f, StartY = 0.0f;
+
+	MouseX = event.GetX();
+	MouseY = event.GetY();
 
     if (event.RightIsDown())
     {
@@ -565,25 +586,7 @@ void LandGLContext::OnMouse(wxMouseEvent& event)
     }
     else
     {
-        // Calculate new brush position
-        GLfloat winZ;
-        GLint viewport[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
-
-        glReadPixels(event.GetX(), viewport[3] - event.GetY(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
-        vec3 screenPos = vec3(event.GetX(), viewport[3] - event.GetY(), winZ);
-        vec3 worldPos = unProject(screenPos, View, Projection, vec4(0.0f, 0.0f, viewport[2], viewport[3]));
-
-        CurrentBrush.SetPosition(worldPos);
-
-        //if ((*CurrentShader) == LandscapeShad)
-        //    LandscapeShad.SetBrushPosition(CurrentBrush.GetRenderPosition());
-        //else if ((*CurrentShader) == LightningOnlyShad)
-        //    LightningOnlyShad.SetBrushPosition(CurrentBrush.GetRenderPosition());
-        //else if ((*CurrentShader) == HeightShad)
-        //    HeightShad.SetBrushPosition(CurrentBrush.GetRenderPosition());
-        //else if ((*CurrentShader) == WireframeShad)
-        //    WireframeShad.SetBrushPosition(CurrentBrush.GetRenderPosition());
+        UpdateBrushPosition();
     }
 
     //if (event.GetWheelRotation() != 0)
@@ -662,12 +665,15 @@ void LandGLContext::ManageInput()
 		case LANDSCAPE:
 			ClipmapLandscapeShad.SetCameraOffsetX(OffsetX);
 			ClipmapLandscapeShad.SetCameraOffsetY(OffsetY);
+			ClipmapLandscapeShad.SetBrushPosition(CurrentBrush.GetRenderPosition());
 			break;
 		case WIREFRAME:
 			ClipmapWireframeShad.SetCameraOffsetX(OffsetX);
 			ClipmapWireframeShad.SetCameraOffsetY(OffsetY);
 			break;
 		}
+
+		UpdateBrushPosition();
 		UpdateTBO();
 
 		View = lookAt(CameraPosition, CameraPosition + Direction, Up);
