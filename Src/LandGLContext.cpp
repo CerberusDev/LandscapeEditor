@@ -43,43 +43,9 @@ float LandGLContext::getSecond()
 LandGLContext::LandGLContext(wxGLCanvas *canvas):
 wxGLContext(canvas), MouseIntensity(350.0f), CurrentLandscape(0), LandscapeTexture(0), BrushTexture(1), SoilTexture(3), CameraSpeed(0.2f),
 OffsetX(0.0001f), OffsetY(0.0001f), ClipmapsAmount(8), VBO(0), IBOs(0), TBOs(0), IBOLengths(0), MovementModifier(10.0f), bNewLandscape(false),
-VisibleClipmapStrips(0), CurrentDisplayMode(LANDSCAPE), DATA(0), CurrentMovementMode(ATTACHED_TO_TERRAIN)
+VisibleClipmapStrips(0), CurrentDisplayMode(LANDSCAPE), CurrentMovementMode(ATTACHED_TO_TERRAIN)
 {
 	programStartMoment = timeGetTime() / 1000.0f;
-
-	DataSize = 424;
-	StartIndexX = StartIndexY = 210;
-
-	DATA = new float[DataSize * DataSize];
-
-	LOG("Generating terrain data...");
-
-	for (int i = 0; i < DataSize; ++i)
-	{
-		for (int j = 0; j < DataSize; ++j)
-		{
-			//DATA[i + DataSize * j] = 10.0f + i / 10.0f;
-			//DATA[i + DataSize * j] = (i % 32) / 8.0f + 430.0f;
-			//DATA[i + DataSize * j] = (j % 512 == 113 || i % 512 == 113) ? (20.0f) : (0.0f);
-			//DATA[i + DataSize * j] = 93.8f;
-			//DATA[i + DataSize * j] = 50.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
-			//DATA[i + DataSize * j] = 20.0f + j / 11.0f + i / 4.36f;
-			//DATA[i + DataSize * j] = sin(float(j) / 400.f) * 80.0f + 300.0f;
-			DATA[i + DataSize * j] = 70.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
-
-			//float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
-			//float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
-			//float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
-			//float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
-			//float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
-			//DATA[i + DataSize * j] = (a + b + c + d + e) * 5.0f;
-		}
-
-		if (DataSize > 10 && i % (DataSize / 10) == 0)
-			LOG("Progress: " << i / (DataSize / 10) * 10 << "%");
-	}
-
-	LOG("Terrain Ready!\n");
 
 	VisibleClipmapStrips = new ClipmapStripPair[ClipmapsAmount];
 
@@ -108,9 +74,6 @@ VisibleClipmapStrips(0), CurrentDisplayMode(LANDSCAPE), DATA(0), CurrentMovement
 
     CurrentLandscape = new Landscape(9, 1.0f);
     LOG("Initial Landscape created");
-
-	StartIndexX += CurrentLandscape->GetTBOSize() / 2;
-	StartIndexY += CurrentLandscape->GetTBOSize() / 2;
 
     glClearColor(0.6f, 0.85f, 0.9f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -244,7 +207,6 @@ LandGLContext::~LandGLContext(void)
     glDeleteTextures(1, &SoilTexture);
     glDeleteTextures(1, &BrushTexture);
 
-	delete[] DATA;
 	delete[] IBOs;
 	delete[] IBOLengths;
 }
@@ -316,6 +278,10 @@ void LandGLContext::InitTBO(GLuint TBOID, int ClipmapScale)
 
 	glActiveTexture(GL_TEXTURE2);
 	float *Data = new float[TBOSize * TBOSize];
+	float *Heightmap = CurrentLandscape->GetHeightmap();
+	int StartIndexX = CurrentLandscape->GetStartIndexX();
+	int StartIndexY = CurrentLandscape->GetStartIndexY();
+	unsigned int DataSize = CurrentLandscape->GetHeightDataSize();
 
 	for (int x = 0; x < TBOSize; ++x)
 	{
@@ -324,7 +290,7 @@ void LandGLContext::InitTBO(GLuint TBOID, int ClipmapScale)
 			int IndexX = int(mod(float(StartIndexX + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (x - TBOSize) * ClipmapScale), float(DataSize)));
 			int IndexY = int(mod(float(StartIndexY + ClipmapScale + ((TBOSize + 1) / 2) * (ClipmapScale - 1) + (y - TBOSize) * ClipmapScale), float(DataSize)));
 
-			Data[y * TBOSize + x] = DATA[IndexY * DataSize + IndexX];
+			Data[y * TBOSize + x] = Heightmap[IndexY * DataSize + IndexX];
 		}
 	}
 			
@@ -722,11 +688,11 @@ void LandGLContext::SaveLandscape(const char* FilePath)
     //if (CurrentLandscape != 0)
     //    CurrentLandscape->SaveToFile(FilePath);
 
-	LOG("Saving...");
+	//LOG("Saving...");
 
-	LandscapeEditor::FileWrite(FilePath, DATA, DataSize * DataSize);
+	//LandscapeEditor::FileWrite(FilePath, DATA, DataSize * DataSize);
 
-	LOG("Completed!");
+	//LOG("Completed!");
 }
 
 // --------------------------------------------------------------------
@@ -734,32 +700,32 @@ void LandGLContext::OpenFromFile(const char* FilePath)
 {
 	LOG("Opening...");
 
-	delete[] DATA;
+	//delete[] DATA;
 
-	DATA = new float[DataSize * DataSize];
-	unsigned int DataByteSize;
+	//DATA = new float[DataSize * DataSize];
+	//unsigned int DataByteSize;
 
-	DATA = (float*)LandscapeEditor::FileRead(FilePath, DataByteSize);
-	DataSize = sqrt((float)DataByteSize / 4.0);
-	StartIndexY = StartIndexX = DataSize / 2.0f;
+	//DATA = (float*)LandscapeEditor::FileRead(FilePath, DataByteSize);
+	//DataSize = sqrt((float)DataByteSize / 4.0);
+	//StartIndexY = StartIndexX = DataSize / 2.0f;
 
-	int ClipmapScale = 1;
-	for (int i = 0; i < ClipmapsAmount; ++i)
-	{
-		InitTBO(TBOs[i], ClipmapScale);
-		ClipmapScale *= 2;
-	}
+	//int ClipmapScale = 1;
+	//for (int i = 0; i < ClipmapsAmount; ++i)
+	//{
+	//	InitTBO(TBOs[i], ClipmapScale);
+	//	ClipmapScale *= 2;
+	//}
 
-	ResetCamera();
-	SetShadersInitialUniforms();
+	//ResetCamera();
+	//SetShadersInitialUniforms();
 
-	for (int i = 0; i < ClipmapsAmount; ++i)
-		VisibleClipmapStrips[i] = CLIPMAP_STRIP_1;
+	//for (int i = 0; i < ClipmapsAmount; ++i)
+	//	VisibleClipmapStrips[i] = CLIPMAP_STRIP_1;
 
-	bNewLandscape = true;
-	LOG("Completed!");
+	//bNewLandscape = true;
+	//LOG("Completed!");
 
-    CheckGLError();
+ //   CheckGLError();
 }
 
 // --------------------------------------------------------------------
@@ -862,6 +828,10 @@ void LandGLContext::UpdateTBO()
 
 	float *BufferData32 = NULL;
 	int TBOSize = CurrentLandscape->GetTBOSize();
+	float *Heightmap = CurrentLandscape->GetHeightmap();
+	unsigned int DataSize = CurrentLandscape->GetHeightDataSize();
+	int StartIndexX = CurrentLandscape->GetStartIndexX();
+	int StartIndexY = CurrentLandscape->GetStartIndexY();
 	int ClipmapScale = 1;
 
 	for (int lvl = 0; lvl < ClipmapsAmount; ++lvl)
@@ -908,7 +878,7 @@ void LandGLContext::UpdateTBO()
 					int x = int(mod(StartIndexX + ((TBOSize + 3) / 2) * (ClipmapScale - 1) + ClipmapLastUpdateOffsetX[lvl] - ClipmapScale + SignX * (j * ClipmapScale + 1) - ((SignX < 0) ? ((TBOSize + 1) * ClipmapScale - 2.0f) : (0.0f)), float(DataSize)));
 					int y = int(mod(StartIndexY - ((TBOSize - 3) / 2) * (ClipmapScale - 1) - (TBOSize - 1.0f) + ClipmapLastUpdateOffsetY[lvl] - ClipmapScale + i * ClipmapScale, float(DataSize)));
 
-					BufferData32[yTBO * TBOSize + xTBO] = DATA[y * DataSize + x];
+					BufferData32[yTBO * TBOSize + xTBO] = Heightmap[y * DataSize + x];
 				}
 			}
 		
@@ -921,7 +891,7 @@ void LandGLContext::UpdateTBO()
 					int x = int(mod(StartIndexX - ((TBOSize - 3) / 2) * (ClipmapScale - 1) - (TBOSize - 1.0f) + ClipmapLastUpdateOffsetX[lvl] - ClipmapScale + (i + DiffX) * ClipmapScale, float(DataSize)));
 					int y = int(mod(StartIndexY + ((TBOSize + 3) / 2) * (ClipmapScale - 1) + ClipmapLastUpdateOffsetY[lvl] - ClipmapScale + SignY * (j * ClipmapScale + 1) - ((SignY < 0) ? (TBOSize * ClipmapScale + (ClipmapScale - 2.0f)) : (0.0f)), float(DataSize)));
 
-					BufferData32[yTBO * TBOSize + xTBO] = DATA[y * DataSize + x];
+					BufferData32[yTBO * TBOSize + xTBO] = Heightmap[y * DataSize + x];
 				}
 			}
 

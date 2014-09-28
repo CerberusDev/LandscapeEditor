@@ -33,8 +33,11 @@ protected:
     /// Distance between two adjacent vertices
     float Offset;
 
-    /// Array with heigh vertices data
-    float *TrueHeightmap;
+    /// HeightData
+    float *HeightData;
+	unsigned int HeightDataSize;
+	int StartIndexX;
+	int StartIndexY;
 
 	/// VBO Data
 	float *ClipmapVBOData;
@@ -64,8 +67,11 @@ public:
 	float * GetClipmapVBOData(int &outDataAmount);
 	unsigned int * GetClipmapIBOData(ClipmapIBOMode Mode, int &outDataAmount);
 	unsigned int GetTBOSize() {return TBOSize;};
-    float * GetHeightmap(int &VerticesAmountX);
+	float * GetHeightmap() {return HeightData;};
+	unsigned int GetHeightDataSize() {return HeightDataSize;};
     float GetOffset() {return Offset;};
+	int GetStartIndexX() {return StartIndexX;};
+	int GetStartIndexY() {return StartIndexY;};
 
 	// Not working assignment operator
 	Landscape & operator= (Landscape & other) {return other;};

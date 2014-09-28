@@ -8,7 +8,7 @@
 
 // --------------------------------------------------------------------
 Landscape::Landscape(int ClipmapRimWidth, float VerticesInterval):
-RestartIndex(0xFFFFFFFF), Offset(VerticesInterval), VBOSize(0), IBOSize(0)
+RestartIndex(0xFFFFFFFF), Offset(VerticesInterval), VBOSize(0), IBOSize(0), TBOSize(0), HeightData(0), HeightDataSize(0), StartIndexX(0), StartIndexY(0)
 {
 	ClipmapIBOsData = new unsigned int*[IBO_MODES_AMOUNT];
 
@@ -21,6 +21,44 @@ RestartIndex(0xFFFFFFFF), Offset(VerticesInterval), VBOSize(0), IBOSize(0)
 
 	for (int i = 0; i < IBO_MODES_AMOUNT; ++i)
 		CreateIBO((ClipmapIBOMode)i);
+
+
+	HeightDataSize = 424;
+	StartIndexX = StartIndexY = 210;
+
+	HeightData = new float[HeightDataSize * HeightDataSize];
+
+	LOG("Generating terrain data...");
+
+	for (unsigned int i = 0; i < HeightDataSize; ++i)
+	{
+		for (unsigned int j = 0; j < HeightDataSize; ++j)
+		{
+			//HeightData[i + HeightDataSize * j] = 10.0f + i / 10.0f;
+			//HeightData[i + HeightDataSize * j] = (i % 32) / 8.0f + 430.0f;
+			//HeightData[i + HeightDataSize * j] = (j % 512 == 113 || i % 512 == 113) ? (20.0f) : (0.0f);
+			//HeightData[i + HeightDataSize * j] = 93.8f;
+			//HeightData[i + HeightDataSize * j] = 50.0f + sin(float(i) / 3.0f) * 1.0f + sin(float(j) / 5.6f) * 1.6f;
+			//HeightData[i + HeightDataSize * j] = 20.0f + j / 11.0f + i / 4.36f;
+			//HeightData[i + HeightDataSize * j] = sin(float(j) / 400.f) * 80.0f + 300.0f;
+			HeightData[i + HeightDataSize * j] = 70.0f + sin(float(i) / 10.0f) * 2.0f + sin(float(j) / 25.6f) * 10.6f;
+
+			//float a = sin(float(i) / (1.0 * 704.0f)) * 30.0f;
+			//float b = sin(float(i) / (1.0 * 352.0f)) * 25.0f;
+			//float c = (sin(float(j) / (1.0 * 469.4f)) - (cos(float(j) / (1.0 * 234.7f)) + 1.0f) / 4.5f) * 30.0f;
+			//float d = sin(float(j) / (2.0 * 58.f)) * 3.0f + sin(float(i) / (2.0 * 122.f)) * 5.0f;
+			//float e = sin(float(i) / (3.0 * 2.0f)) * 0.8f * cos(float(j) / (3.0 * 6.2f)) * 0.6f + sin(float(j) / (3.0 * 2.3f)) * 0.8f * cos(float(i) / (3.0 * 6.4f)) * 0.5f;
+			//HeightData[i + HeightDataSize * j] = (a + b + c + d + e) * 5.0f;
+		}
+
+		if (HeightDataSize > 10 && i % (HeightDataSize / 10) == 0)
+			LOG("Progress: " << i / (HeightDataSize / 10) * 10 << "%");
+	}
+
+	StartIndexX += TBOSize / 2;
+	StartIndexY += TBOSize / 2;
+
+	LOG("Terrain Ready!\n");
 }
 
 // --------------------------------------------------------------------
@@ -29,7 +67,7 @@ RestartIndex(0xFFFFFFFF), Offset(0.25f)
 {
     unsigned int DataByteSize;
 
-    TrueHeightmap = (float*)LandscapeEditor::FileRead(FilePath, DataByteSize);
+    HeightData = (float*)LandscapeEditor::FileRead(FilePath, DataByteSize);
     ClipmapVBOWidth = sqrt((float)DataByteSize / 4.0);
 
     //CenterVBOData = new float[ClipmapVBOsWidth[0] * ClipmapVBOsWidth[0] * 2];
@@ -54,6 +92,8 @@ Landscape::~Landscape()
 
 	delete [] ClipmapIBOsData;
 	delete [] ClipmapVBOData;
+
+	delete [] HeightData;
 }
 
 // --------------------------------------------------------------------
@@ -265,7 +305,7 @@ void Landscape::CreateIBO(ClipmapIBOMode Mode)
 // --------------------------------------------------------------------
 bool Landscape::SaveToFile(const char* FilePath)
 {
-    LandscapeEditor::FileWrite(FilePath, TrueHeightmap, ClipmapVBOWidth * ClipmapVBOWidth);
+    LandscapeEditor::FileWrite(FilePath, HeightData, ClipmapVBOWidth * ClipmapVBOWidth);
 
     return true;
 }
@@ -295,7 +335,7 @@ void Landscape::UpdateHeightmap(Brush &AffectingBrush)
                 if (Distance <= BrushRadius)
                 {
                     Counter++;
-                    HeightSum += TrueHeightmap[z * ClipmapVBOWidth + x];
+                    HeightSum += HeightData[z * ClipmapVBOWidth + x];
                 }
             }
         }
@@ -319,17 +359,17 @@ void Landscape::UpdateHeightmap(Brush &AffectingBrush)
                 switch (AffectingBrush.GetMode())
                 {
                 case 0:           
-                    TrueHeightmap[z * ClipmapVBOWidth + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
+                    HeightData[z * ClipmapVBOWidth + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
                     break;
                 case 1:
-                    TrueHeightmap[z * ClipmapVBOWidth + x] -= 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
+                    HeightData[z * ClipmapVBOWidth + x] -= 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (0.5f - pow(1.0f - DistanceFactor, 2))); 
                     break;
                 case 2:
-                    HeightDifference = HeightAverage - TrueHeightmap[z * ClipmapVBOWidth + x];
-                    TrueHeightmap[z * ClipmapVBOWidth + x] += 0.02f * HeightDifference;
+                    HeightDifference = HeightAverage - HeightData[z * ClipmapVBOWidth + x];
+                    HeightData[z * ClipmapVBOWidth + x] += 0.02f * HeightDifference;
                     break;
                 case 3:
-                    TrueHeightmap[z * ClipmapVBOWidth + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (pow(1.0f - DistanceFactor, 2))); 
+                    HeightData[z * ClipmapVBOWidth + x] += 0.15f * ((DistanceFactor < 0.5f) ? (pow(DistanceFactor, 2)) : (pow(1.0f - DistanceFactor, 2))); 
                     break;
                 }
             }   
@@ -349,17 +389,4 @@ unsigned int * Landscape::GetClipmapIBOData(ClipmapIBOMode Mode, int &outDataAmo
 {
 	outDataAmount = IBOSize[Mode];
     return ClipmapIBOsData[Mode];
-}
-
-// --------------------------------------------------------------------
-float * Landscape::GetHeightmap(int &VerticesAmountX)
-{
-    VerticesAmountX = ClipmapVBOWidth;
-
-    float *Data = new float[ClipmapVBOWidth * ClipmapVBOWidth];
-
-    for (unsigned int i = 0; i < ClipmapVBOWidth * ClipmapVBOWidth; i++)
-        Data[i] = TrueHeightmap[i];
-
-    return Data;
 }

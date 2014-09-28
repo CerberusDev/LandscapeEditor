@@ -79,14 +79,11 @@ protected:
     /// Pointer to current landscape object
     Landscape *CurrentLandscape;
 
+	/// Camera Offsets
 	float OffsetX;
 	float OffsetY;
 
-	int StartIndexX;
-	int StartIndexY;
 
-	float *DATA;
-	int DataSize;
 
 	ClipmapStripPair *VisibleClipmapStrips;
 
